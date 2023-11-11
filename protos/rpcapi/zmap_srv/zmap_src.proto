@@ -1,0 +1,36 @@
+syntax             = "proto3";
+option  go_package = "nas-common/rpcapi/zmap_srv";
+
+package zmap_srv;
+
+// zmap 服务
+service ZmapSrv {
+  rpc DeliverScanIp(DeliverScanIpReq) returns (DeliverScanIpResp) {}
+}
+
+//----------------------------DeliverScanIp
+
+enum ScanType {
+    FASTMODE    = 0;
+    MOSTCOMMON  = 1;
+    PORTRANGE   = 2;
+    PORTSINGLE  = 3;
+    PORTSERVICE = 4;
+    DEFAULT     = 5;
+}
+
+message DeliverScanIpReq{
+    string   scan_id           = 1;
+    string   scan_ip           = 2;
+    ScanType scan_type         = 3;
+    bool     with_service      = 4;
+    bool     with_os           = 5;
+    bool     with_script       = 6;
+    bool     with_trace        = 7;
+    string   scan_type_message = 8;
+}
+
+message DeliverScanIpResp{
+    //响应码
+    int32 code = 1;
+}

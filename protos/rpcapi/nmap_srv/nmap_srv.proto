@@ -1,0 +1,18 @@
+syntax             = "proto3";
+option  go_package = "nas-common/rpcapi/nmap_srv";
+
+package nmap_srv;
+
+// zmap 的 rpc 接口
+service NmapSrv {
+  rpc DeliverScanId(DeliverScanIdReq) returns (DeliverScanIdResp) {}
+}
+
+message DeliverScanIdReq{
+    string scan_id = 1;
+}
+
+message DeliverScanIdResp{
+    //响应码
+    int32 code = 1;
+}

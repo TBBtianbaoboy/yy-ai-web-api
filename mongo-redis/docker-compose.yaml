@@ -1,0 +1,41 @@
+version: '3'
+services:
+#redis service
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    container_name: redis-yyai
+    volumes:
+     - /etc/localtime:/etc/localtime # make time sync
+     - ./config/redis/redis.conf:/usr/local/etc/config/redis.conf # change password in this file
+     - ./config/redis/data:/data
+    restart: unless-stopped
+    command: redis-server /usr/local/etc/config/redis.conf
+    privileged: true
+    # make netowrk connect
+    networks :
+      nas:
+        ipv4_address: 172.66.0.2
+
+# mongodb service
+  mongodb:
+    image: yowoo/my-mongo:latest
+    ports:
+      - "27017:27017"
+    container_name: mongo-yyai
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./config/mongo:/data/db
+    restart: unless-stopped
+    command: mongod --auth --bind_ip_all --port 27017
+    networks:
+      nas:
+        ipv4_address: 172.66.0.3
+
+#create a new bridge named nas
+networks:
+  nas:
+    ipam:
+      config:
+        - subnet: 172.66.0.0/16

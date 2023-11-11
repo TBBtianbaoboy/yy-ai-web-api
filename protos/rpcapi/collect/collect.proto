@@ -1,0 +1,81 @@
+syntax             = "proto3";
+option  go_package = "nas-common/rpcapi/collect";
+
+package collect;
+
+// 信息收集服务
+service Collect {
+  //收集agent主动上报上来的基本信息
+  rpc CollectAgentBasicInfo(stream CollectAgentBasicInfoReq) returns (CollectAgentBasicInfoResp){}
+  //收集agent主动上报上来的基线扫描结果
+  rpc CollectAgentCisScanResult(CollectAgentCisScanResultReq) returns (CollectAgentCisScanResultResp) {}
+}
+
+message CollectAgentBasicInfoReq {
+    string          agent_ip                        = 1;//agent ip地址
+    string          agent_hostname                  = 2;//agent hostname
+    string          mac_address                     = 4;//agent mac 地址
+    int64           pid                             = 5;//agent pid
+    AgentDiskInfo   agent_disk_info                 = 6;//agent 磁盘信息
+    AgentSystemInfo agent_system_info               = 7;//agent 系统信息
+    repeated        AgentPortInfo   agent_port_info = 8;//agent 端口信息
+}
+
+//agent所在主机的系统信息
+message AgentSystemInfo {
+    double agent_cpu    = 2; //agent cpu利用率
+    int32  core_cpu     = 1; //agent cpu 核数
+    double agent_memory = 3; //agent 内存使用率
+    uint64 total_memory = 4; //agent 主机内存大小
+}
+
+//agent所在主机的磁盘信息
+message AgentDiskInfo {
+    string device       = 1; //设备名
+    string mount_point  = 2; //挂载点
+    string fstype       = 3; //文件系统类型
+    string options      = 4; //其他信息
+    uint64 total        = 5; //磁盘总量
+    double used_percent = 7; //磁盘使用率
+}
+
+//agent所在主机的端口信息
+message AgentPortInfo {
+    string               port_type               = 1; //端口类型
+    int64                port                    = 2;//端口号
+    string               port_status             = 3;//端口状态
+    string               port_service            = 4;//端口服务
+    AgentPortPrecessInfo agent_port_process_info = 5; //端口pid信息
+}
+
+//agent所在主机的端口的进程信息
+message AgentPortPrecessInfo {
+    int64  pid            = 1; //进程ID
+    double cpu_percent    = 2; //进程所使用cpu时间的百分比
+    string cmdline        = 3; //运行进程所使用的命令
+    int64  create_time    = 4; //进程创建时间
+    string cwd            = 5; //进程当前工作目录
+    float  memory_percent = 6; //进程使用内存的百分比
+    string username       = 7; //进程所属用户
+}
+
+message CollectAgentBasicInfoResp {
+    int32 code = 1; //响应码
+}
+
+//-------------------------------------------------------
+
+message CollectAgentCisScanResultReq{
+    string   agent_id              = 1;
+    int64    start_time            = 2;
+    repeated CisScanResult results = 3;
+}
+
+message CisScanResult{
+    string cis_id = 1; //cis Id
+    bool   status = 2; //检测状态
+}
+
+message CollectAgentCisScanResultResp{
+    int32 code = 1; //响应码
+}

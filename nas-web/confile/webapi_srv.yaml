@@ -1,0 +1,48 @@
+Mongodb:
+  Host: 1.12.44.71
+  Port: 27017
+  User: yyleng
+  Passwd: lyy40166999
+  DbName: db_yyai
+
+Redis:
+  Host: 1.12.44.71
+  Port: 6379
+  Passwd: lyy40166999
+
+Log:
+  LogPath : /home/aico/dlut/project/web_log
+  LogLevel : info
+  MaxSize : 50
+  MaxAge : 7
+  Stacktrace : error
+  IsStdOut : yes
+
+Web:
+  Host: 0.0.0.0:5252
+
+Other:
+  IgnoreURLs:
+    - /
+    - /auth/login
+    - /auth/verifycode
+    - /v1/user
+
+  JwtTimeOut: 864000 #second
+  JwtLogLevel: debug
+
+Kafka:
+  EndPoints:
+    - 182.92.103.41:9092
+
+# etcd 不可用时再手动指定/ # 生产与测试环境使用
+RpcUrl:
+  Forward: 182.92.103.41:50053
+
+Etcd:
+  EtcdHost:
+    - 182.92.103.41:2379
+
+Openai:
+  OpenaiApiKey: "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"
+  ProxyUrl: "http://127.0.0.1:7890"

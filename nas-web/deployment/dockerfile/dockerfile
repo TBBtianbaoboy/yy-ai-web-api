@@ -1,0 +1,10 @@
+FROM alpine
+LABEL maintainer "aico"
+
+RUN mkdir -p /home/aico/nas/bin
+RUN mkdir -p /home/aico/nas/confile
+
+COPY ./confile/webapi_srv.yaml /home/aico/nas/confile/webapi_srv.yaml
+WORKDIR /home/aico/nas/bin
+COPY ./bin/nas_web .
+ENTRYPOINT ["/home/aico/nas/bin/nas_web"]

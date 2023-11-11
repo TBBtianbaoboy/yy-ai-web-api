@@ -1,0 +1,6 @@
+version: '3'
+services:
+  nas_web:
+    image: nas_web:latest
+    ports:
+      - "5002:5252"

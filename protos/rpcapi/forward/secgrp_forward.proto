@@ -1,0 +1,32 @@
+syntax             = "proto3";
+option  go_package = "nas-common/rpcapi/forward";
+
+package forward;
+
+// 转发服务
+service Forward {
+  //转发代理程序的行为(安全组行为/基线扫描行为)
+  rpc ForwardAgentAction(ForwardAgentActionReq) returns (ForwardAgentActionResp) {}
+}
+
+enum Action {
+    ADDRULE         = 0;
+    DELETERULE      = 1;
+
+    STARTCISCHECK   = 2;
+    RECOVERCISCHECK = 3;
+}
+
+message ForwardAgentActionReq{
+    Action action         = 1; //指令行为
+    int32  rule_direction = 2; //规则应用方向 | CIS ID
+    int32  protocol_type  = 3; //协议类型
+    int32  apply_policy   = 4; //授权策略
+    string port           = 5; //应用端口
+    string cidr           = 6; //授权对象
+    string channel_id     = 8; //管道id
+}
+
+message ForwardAgentActionResp{
+    int32 code = 1; //响应码
+}
