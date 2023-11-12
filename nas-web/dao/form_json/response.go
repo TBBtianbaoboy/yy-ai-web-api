@@ -49,6 +49,11 @@ type ListScanResp struct {
 }
 
 // chat [Ok]
+type TranscriptionsResp struct {
+	Answer string `json:"answer"` //assistant answer
+}
+
+// chat [Ok]
 type SendNoContextNoStreamChatResp struct {
 	Answer string `json:"answer"` //assistant answer
 }

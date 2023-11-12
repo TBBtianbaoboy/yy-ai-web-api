@@ -475,6 +475,12 @@ definitions:
         description: 基本状态
         type: string
     type: object
+  formjson.TranscriptionsResp:
+    properties:
+      answer:
+        description: assistant answer
+        type: string
+    type: object
   formjson.UpdateAgentBaselineReq:
     properties:
       agent_id:
@@ -966,6 +972,38 @@ paths:
       summary: 增加agent安全组规则
       tags:
       - 资产管理
+  /v1/audio/transcriptions:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Transcribes audio into the input language
+      parameters:
+      - description: audio file data
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: input audio language [optional]
+        in: query
+        name: language
+        type: string
+      - description: authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response data
+          schema:
+            $ref: '#/definitions/formjson.TranscriptionsResp'
+      security:
+      - ApiKeyAuth: []
+      summary: Transcribes audio into the input language
+      tags:
+      - Audio
   /v1/chat/context_stream:
     post:
       consumes:

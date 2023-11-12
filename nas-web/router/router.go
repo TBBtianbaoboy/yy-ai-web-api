@@ -13,6 +13,7 @@ func InitRouters(app *iris.Application) {
 
 	commonRouter := app.Party("/")
 	{
+		//Auth Router
 		common.RegisterAuthRouter(commonRouter)
 	}
 	appRouter := app.Party("/v1/")
@@ -26,6 +27,11 @@ func InitRouters(app *iris.Application) {
 		appChatRouter := appRouter.Party("/chat")
 		{
 			v1.RegisterChatRouter(appChatRouter)
+		}
+		//Audio Router
+		appAudioRouter := appRouter.Party("/audio")
+		{
+			v1.RegisterAudioRouter(appAudioRouter)
 		}
 		//Image Router
 		appImageRouter := appRouter.Party("/image")

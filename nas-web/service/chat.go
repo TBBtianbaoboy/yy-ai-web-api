@@ -28,6 +28,7 @@ func SendNoContextNoStreamChatHandler(ctx *wrapper.Context, reqBody interface{})
 	if err != nil {
 		mlog.Error("create no context no stream chat failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerCreateChatFailed, 0)
+		return
 	}
 
 	support.SendApiResponse(ctx, resp, "")

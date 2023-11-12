@@ -710,6 +710,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/audio/transcriptions": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Transcribes audio into the input language",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Audio"
+                ],
+                "summary": "Transcribes audio into the input language",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "audio file data",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "input audio language [optional]",
+                        "name": "language",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response data",
+                        "schema": {
+                            "$ref": "#/definitions/formjson.TranscriptionsResp"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/chat/context_stream": {
             "post": {
                 "security": [
@@ -1940,6 +1990,15 @@ const docTemplate = `{
             "properties": {
                 "status": {
                     "description": "基本状态",
+                    "type": "string"
+                }
+            }
+        },
+        "formjson.TranscriptionsResp": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "description": "assistant answer",
                     "type": "string"
                 }
             }

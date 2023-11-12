@@ -47,6 +47,11 @@ type UpdateUserStatusReq struct {
 	Enable bool `json:"enable"`                  //是否允许登录
 }
 
+// audio [Ok]
+type TranscriptionsReq struct {
+	Language string `json:"language" form:"language"` // input audio language [optional]
+}
+
 // chat [Ok]
 type SendNoContextNoStreamChatReq struct {
 	ModelName string `json:"model_name"` // chat model name

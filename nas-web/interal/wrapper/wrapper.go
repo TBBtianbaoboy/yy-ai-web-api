@@ -1,12 +1,3 @@
-//---------------------------------
-//File Name    : wrapper.go
-//Author       : aico
-//Mail         : 2237616014@qq.com
-//Github       : https://github.com/TBBtianbaoboy
-//Site         : https://www.lengyangyu520.cn
-//Create Time  : 2021-12-14 17:35:36
-//Description  :
-//----------------------------------
 package wrapper
 
 import (
@@ -20,6 +11,7 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/go-playground/validator.v9"
 )
+
 type ApiHandler func(ctx *Context, reqBody interface{}) error
 
 type ApiConfig struct {
