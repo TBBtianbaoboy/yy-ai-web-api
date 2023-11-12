@@ -103,6 +103,14 @@ type ListAgentReq struct {
 	Search   string `form:"search" json:"search"`       //根据主机IP/hostname 进行搜索
 }
 
+// image [Ok]
+type GenerateImageReq struct {
+	ModelName string `json:"model_name"` // model name
+	Prompt    string `json:"prompt"`     // prompt content
+	Size      string `json:"size"`       //image size
+	Quality   string `json:"quality"`    // image quality
+}
+
 type AgentSystemInfoReq struct {
 	HashId string `form:"hash_id" json:"hash_id" validate:"required"` //agent hash id (唯一)
 }

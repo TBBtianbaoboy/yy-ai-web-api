@@ -48,9 +48,9 @@ type ListScanResp struct {
 	Results []ListScanItem `bson:"results" json:"results"` //扫描列表
 }
 
-// chat [Ok]
+// image [Ok]
 type TranscriptionsResp struct {
-	Answer string `json:"answer"` //assistant answer
+	Text string `json:"text"` //assistant answer
 }
 
 // chat [Ok]
@@ -261,4 +261,8 @@ type GetBaselineInfoResp struct {
 	Desc    string `json:"desc" form:"desc"`       //基线规则描述
 	Explain string `json:"explain" form:"explain"` //解释
 	Solute  string `json:"solute" form:"solute"`   //解决方案
+}
+
+type GenerateImageResp struct {
+	Base64 string `json:"base64"` // image content
 }

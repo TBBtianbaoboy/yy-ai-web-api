@@ -66,4 +66,6 @@ const (
 	ServerUpdateSessionMessageFailed string = "更新会话消息失败"
 	ServerDeleteSessionMessageFailed string = "删除会话消息失败"
 	GetAudioFileFailed               string = "获取音频文件失败"
+	ServerTranscriptionFailed        string = "音频转换失败"
+	ServerGenerateImageFailed        string = "生成图片失败"
 )

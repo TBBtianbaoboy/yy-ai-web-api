@@ -119,597 +119,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/agent/": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get agent list",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "获取agent列表",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "分页",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页大小",
-                        "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "根据主机IP/hostname 进行搜索",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.ListAgentResp"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "delete agent",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "删除agent",
-                "parameters": [
-                    {
-                        "description": "request data",
-                        "name": "auth",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/formjson.DeleteAgentReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.StatusResp"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/agent/baseline": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "list agent baseline result",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "获取基线扫描结果列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "agent_id",
-                        "name": "agent_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页大小",
-                        "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "基线扫描状态(\"0\" failed | \"1\" success)",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.ListAgentBaselineResp"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "update baseline scan item attr",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "更新基线扫描项属性",
-                "parameters": [
-                    {
-                        "description": "request data",
-                        "name": "auth",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/formjson.UpdateAgentBaselineReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.StatusResp"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "start baseline scan",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "开启基线扫描",
-                "parameters": [
-                    {
-                        "description": "request data",
-                        "name": "auth",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/formjson.StartBaselineScanReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.StatusResp"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/agent/baseline/info": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get baseline scan info",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "获取基线扫描详情",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "cis_id",
-                        "name": "cis_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.GetBaselineInfoResp"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/agent/download/": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "download agent",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "下载agent",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.DownloadAgentResp"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/agent/info/port/": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get agent port info",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "获取agent的主机对外开放端口信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "agent hash id (唯一)",
-                        "name": "hash_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "port_status",
-                        "name": "port_status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "port type",
-                        "name": "port_type",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "search",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.AgentPortInfoResp"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/agent/info/system/": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get agent system info",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "获取agent的主机系统信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "agent hash id (唯一)",
-                        "name": "hash_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.AgentSystemInfoResp"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/agent/secgrp": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get agent secure group list",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "获取agent 安全组列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "agent_id",
-                        "name": "agent_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "根据控制方向来获取数据(-1 入|0 全部| 1 出)",
-                        "name": "direction",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页大小",
-                        "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "根据时间|端口号进行排序",
-                        "name": "sort",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.ListAgentSecGrpResp"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "add agent secure group rule",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "增加agent安全组规则",
-                "parameters": [
-                    {
-                        "description": "request data",
-                        "name": "auth",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/formjson.AddAgentSecGrpRuleReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.StatusResp"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "delete agent secure group rule",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产管理"
-                ],
-                "summary": "删除agent安全组规则",
-                "parameters": [
-                    {
-                        "description": "request data",
-                        "name": "auth",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/formjson.DeleteAgentSecGrpRuleReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "authentication",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response data",
-                        "schema": {
-                            "$ref": "#/definitions/formjson.StatusResp"
-                        }
-                    }
-                }
-            }
-        },
         "/v1/audio/transcriptions": {
             "post": {
                 "security": [
@@ -939,6 +348,52 @@ const docTemplate = `{
                         "description": "response data",
                         "schema": {
                             "$ref": "#/definitions/formjson.StatusResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/image/generate": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "generate image by using text",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image"
+                ],
+                "summary": "generate image",
+                "parameters": [
+                    {
+                        "description": "request data",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/formjson.GenerateImageReq"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response data",
+                        "schema": {
+                            "$ref": "#/definitions/formjson.GenerateImageResp"
                         }
                     }
                 }
@@ -1320,35 +775,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "formjson.AddAgentSecGrpRuleReq": {
-            "type": "object",
-            "properties": {
-                "agent_id": {
-                    "description": "agent id",
-                    "type": "string"
-                },
-                "apply_policy": {
-                    "description": "授权策略 (1 ACCEPT | 0 REHECT | DROP)",
-                    "type": "integer"
-                },
-                "cidr": {
-                    "description": "授权对象 (such as 0.0.0.0/24)",
-                    "type": "string"
-                },
-                "direction": {
-                    "description": "方向 (-1 入方向 | 1 出方向)",
-                    "type": "integer"
-                },
-                "port": {
-                    "description": "端口(0-65535)",
-                    "type": "string"
-                },
-                "protocol_type": {
-                    "description": "协议类型 (1 tcp | 0 udp | -1 icmp)",
-                    "type": "integer"
-                }
-            }
-        },
         "formjson.AddUserReq": {
             "type": "object",
             "required": [
@@ -1387,134 +813,6 @@ const docTemplate = `{
                 }
             }
         },
-        "formjson.AgentPortInfoItem": {
-            "type": "object",
-            "properties": {
-                "pid": {
-                    "description": "进程PID",
-                    "type": "integer"
-                },
-                "port": {
-                    "description": "端口",
-                    "type": "integer"
-                },
-                "port_process_info": {
-                    "description": "与端口对应的进程信息",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/formjson.PortProcessInfo"
-                        }
-                    ]
-                },
-                "port_service": {
-                    "description": "端口服务",
-                    "type": "string"
-                },
-                "port_status": {
-                    "description": "端口状态",
-                    "type": "string"
-                },
-                "port_type": {
-                    "description": "端口类型",
-                    "type": "string"
-                }
-            }
-        },
-        "formjson.AgentPortInfoResp": {
-            "type": "object",
-            "properties": {
-                "results": {
-                    "description": "结果",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/formjson.AgentPortInfoItem"
-                    }
-                }
-            }
-        },
-        "formjson.AgentSystemInfoDisk": {
-            "type": "object",
-            "properties": {
-                "device": {
-                    "description": "设备名",
-                    "type": "string"
-                },
-                "fstype": {
-                    "description": "文件系统类型",
-                    "type": "string"
-                },
-                "mount_point": {
-                    "description": "挂载点",
-                    "type": "string"
-                },
-                "options": {
-                    "description": "其他信息",
-                    "type": "string"
-                },
-                "total": {
-                    "description": "磁盘总量",
-                    "type": "string"
-                },
-                "used_percent": {
-                    "description": "磁盘使用率",
-                    "type": "number"
-                }
-            }
-        },
-        "formjson.AgentSystemInfoResp": {
-            "type": "object",
-            "properties": {
-                "cpu_core": {
-                    "description": "cpu 核数",
-                    "type": "integer"
-                },
-                "cpu_used": {
-                    "description": "cpu 使用率",
-                    "type": "number"
-                },
-                "disk_info": {
-                    "description": "磁盘信息",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/formjson.AgentSystemInfoDisk"
-                        }
-                    ]
-                },
-                "memory_total": {
-                    "description": "内存总量",
-                    "type": "string"
-                },
-                "memory_used": {
-                    "description": "内存使用率",
-                    "type": "number"
-                }
-            }
-        },
-        "formjson.DeleteAgentReq": {
-            "type": "object",
-            "properties": {
-                "hash_ids": {
-                    "description": "agent hash id (唯一)",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "formjson.DeleteAgentSecGrpRuleReq": {
-            "type": "object",
-            "properties": {
-                "agent_id": {
-                    "description": "agent id",
-                    "type": "string"
-                },
-                "rule_id": {
-                    "description": "rule id",
-                    "type": "string"
-                }
-            }
-        },
         "formjson.DeleteContextStreamChatReq": {
             "type": "object",
             "properties": {
@@ -1539,15 +837,6 @@ const docTemplate = `{
                 }
             }
         },
-        "formjson.DownloadAgentResp": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "description": "状态",
-                    "type": "string"
-                }
-            }
-        },
         "formjson.EditUserReq": {
             "type": "object",
             "required": [
@@ -1568,23 +857,32 @@ const docTemplate = `{
                 }
             }
         },
-        "formjson.GetBaselineInfoResp": {
+        "formjson.GenerateImageReq": {
             "type": "object",
             "properties": {
-                "desc": {
-                    "description": "基线规则描述",
+                "model_name": {
+                    "description": "model name",
                     "type": "string"
                 },
-                "explain": {
-                    "description": "解释",
+                "prompt": {
+                    "description": "prompt content",
                     "type": "string"
                 },
-                "name": {
-                    "description": "基线规则名称",
+                "quality": {
+                    "description": "image quality",
                     "type": "string"
                 },
-                "solute": {
-                    "description": "解决方案",
+                "size": {
+                    "description": "image size",
+                    "type": "string"
+                }
+            }
+        },
+        "formjson.GenerateImageResp": {
+            "type": "object",
+            "properties": {
+                "base64": {
+                    "description": "image content",
                     "type": "string"
                 }
             }
@@ -1619,161 +917,6 @@ const docTemplate = `{
                 "username": {
                     "description": "用户名",
                     "type": "string"
-                }
-            }
-        },
-        "formjson.ListAgentBaselineResp": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "description": "检查项总数",
-                    "type": "integer"
-                },
-                "display_count": {
-                    "description": "当前类别总数",
-                    "type": "integer"
-                },
-                "end_time": {
-                    "description": "扫描结束时间",
-                    "type": "integer"
-                },
-                "failed_count": {
-                    "description": "失败项数",
-                    "type": "integer"
-                },
-                "results": {
-                    "description": "结果",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/formjson.ListAgentBaselineRespItem"
-                    }
-                },
-                "start_time": {
-                    "description": "扫描开始时间",
-                    "type": "integer"
-                },
-                "success_count": {
-                    "description": "通过项数",
-                    "type": "integer"
-                }
-            }
-        },
-        "formjson.ListAgentBaselineRespItem": {
-            "type": "object",
-            "properties": {
-                "desc": {
-                    "description": "描述",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "检查项id",
-                    "type": "string"
-                },
-                "is_ignored": {
-                    "description": "是否被忽略",
-                    "type": "boolean"
-                },
-                "status": {
-                    "description": "是否合规",
-                    "type": "boolean"
-                }
-            }
-        },
-        "formjson.ListAgentItem": {
-            "type": "object",
-            "properties": {
-                "agent_ip": {
-                    "description": "agent ip",
-                    "type": "string"
-                },
-                "hash_id": {
-                    "description": "agent hash id (唯一)",
-                    "type": "string"
-                },
-                "hostname": {
-                    "description": "agent hostname",
-                    "type": "string"
-                },
-                "join_time": {
-                    "description": "agent 加入时间",
-                    "type": "integer"
-                },
-                "pid": {
-                    "description": "agent pid",
-                    "type": "integer"
-                },
-                "status": {
-                    "description": "agent 状态",
-                    "type": "boolean"
-                },
-                "update_time": {
-                    "description": "agent 更新时间",
-                    "type": "integer"
-                }
-            }
-        },
-        "formjson.ListAgentResp": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "description": "总数",
-                    "type": "integer"
-                },
-                "results": {
-                    "description": "结果",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/formjson.ListAgentItem"
-                    }
-                }
-            }
-        },
-        "formjson.ListAgentSecGrpItem": {
-            "type": "object",
-            "properties": {
-                "apply_policy": {
-                    "description": "授权策略",
-                    "type": "string"
-                },
-                "cidr": {
-                    "description": "授权对象",
-                    "type": "string"
-                },
-                "create_time": {
-                    "description": "创建时间",
-                    "type": "integer"
-                },
-                "direction": {
-                    "description": "规则作用方向 (-1 In | 1 Out)",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "作用端口",
-                    "type": "integer"
-                },
-                "protocol_type": {
-                    "description": "协议类型",
-                    "type": "string"
-                },
-                "rule_id": {
-                    "description": "唯一表示此条规则 rule_id",
-                    "type": "string"
-                }
-            }
-        },
-        "formjson.ListAgentSecGrpResp": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "description": "数量",
-                    "type": "integer"
-                },
-                "results": {
-                    "description": "结果",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/formjson.ListAgentSecGrpItem"
-                    }
                 }
             }
         },
@@ -1874,39 +1017,6 @@ const docTemplate = `{
                 }
             }
         },
-        "formjson.PortProcessInfo": {
-            "type": "object",
-            "properties": {
-                "cmdline": {
-                    "description": "启动进程的命令",
-                    "type": "string"
-                },
-                "cpu_percent": {
-                    "description": "cpu使用时间百分比",
-                    "type": "number"
-                },
-                "create_time": {
-                    "description": "创建时间",
-                    "type": "integer"
-                },
-                "cwd": {
-                    "description": "工作目录",
-                    "type": "string"
-                },
-                "memory_percent": {
-                    "description": "内存使用百分比",
-                    "type": "number"
-                },
-                "pid_num": {
-                    "description": "PID",
-                    "type": "integer"
-                },
-                "username": {
-                    "description": "所属用户",
-                    "type": "string"
-                }
-            }
-        },
         "formjson.ResetPasswdReq": {
             "type": "object",
             "required": [
@@ -1976,15 +1086,6 @@ const docTemplate = `{
                 }
             }
         },
-        "formjson.StartBaselineScanReq": {
-            "type": "object",
-            "properties": {
-                "agent_id": {
-                    "description": "agent_id",
-                    "type": "string"
-                }
-            }
-        },
         "formjson.StatusResp": {
             "type": "object",
             "properties": {
@@ -1997,25 +1098,8 @@ const docTemplate = `{
         "formjson.TranscriptionsResp": {
             "type": "object",
             "properties": {
-                "answer": {
+                "text": {
                     "description": "assistant answer",
-                    "type": "string"
-                }
-            }
-        },
-        "formjson.UpdateAgentBaselineReq": {
-            "type": "object",
-            "required": [
-                "agent_id",
-                "cis_id"
-            ],
-            "properties": {
-                "agent_id": {
-                    "description": "agent_id",
-                    "type": "string"
-                },
-                "cis_id": {
-                    "description": "cis_id",
                     "type": "string"
                 }
             }
