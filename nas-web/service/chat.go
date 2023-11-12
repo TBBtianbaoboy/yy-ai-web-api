@@ -11,6 +11,7 @@ import (
 	"nas-web/interal/wrapper"
 	"nas-web/support"
 	webutils "nas-web/web-utils"
+	"strconv"
 	"strings"
 	"time"
 
@@ -80,7 +81,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 	resp := formjson.StatusResp{Status: "OK"}
 
 	// [1]: check whether session exist
-	usid := webutils.String.Hash(string(ctx.UserToken.UserId), string(req.SessionId))
+	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
 	sessionMessagesDesc, err, exist := mongo.Chat.GetByUSid(ctx, usid)
 	if err != nil {
 		mlog.Error("get session message failed", zap.Error(err))
@@ -171,7 +172,7 @@ func DeleteContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) (
 	req := reqBody.(*formjson.DeleteContextStreamChatReq)
 	resp := formjson.StatusResp{Status: "OK"}
 
-	usid := webutils.String.Hash(string(ctx.UserToken.UserId), string(req.SessionId))
+	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
 	err = mongo.Chat.DeleteSession(ctx, usid)
 	if err != nil {
 		mlog.Error("delete session failed", zap.Error(err))

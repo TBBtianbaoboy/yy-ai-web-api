@@ -44,5 +44,5 @@ Etcd:
     - 182.92.103.41:2379
 
 Openai:
-  OpenaiApiKey: "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"
+  OpenaiApiKey: "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"
   ProxyUrl: "http://127.0.0.1:7890"
