@@ -1,5 +1,6 @@
 // generate debug page in web
-goswag init -g middleware/preset/preset.go
+go install github.com/swaggo/swag/cmd/swag@latest
+swag init -g middleware/preset/preset.go
 
 //iris version
 github.com/kataras/iris/v12 v12.1.8

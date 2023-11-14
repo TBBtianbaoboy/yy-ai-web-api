@@ -48,7 +48,7 @@ type ListScanResp struct {
 	Results []ListScanItem `bson:"results" json:"results"` //扫描列表
 }
 
-// image [Ok]
+// audio [Ok]
 type TranscriptionsResp struct {
 	Text string `json:"text"` //assistant answer
 }

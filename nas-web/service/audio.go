@@ -1,11 +1,13 @@
 package service
 
 import (
+	"io"
 	"nas-common/mlog"
 	"nas-web/dao/ai"
 	formjson "nas-web/dao/form_json"
 	"nas-web/interal/wrapper"
 	"nas-web/support"
+	webutils "nas-web/web-utils"
 
 	"go.uber.org/zap"
 )
@@ -30,5 +32,37 @@ func TranscriptionsHandler(ctx *wrapper.Context, reqBody interface{}) error {
 	}
 
 	support.SendApiResponse(ctx, resp, "")
+	return nil
+}
+
+// SpeechHandler generate audio from the input text
+func SpeechHandler(ctx *wrapper.Context, reqBody interface{}) error {
+	req := reqBody.(*formjson.SpeechReq)
+
+	audio_file, err := ai.Audio.Speech(req)
+	if err != nil {
+		mlog.Error("generate audio from input text failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerGenerateAudioFailed, 0)
+		return err
+	}
+	defer audio_file.Close()
+
+	ctx.ContentType("application/octet-stream")
+
+	fileName := webutils.String.GetRandomString(10) + ".mp3"
+	ctx.Header("Content-Disposition", "attachment;filename="+fileName)
+
+	ctx.StreamWriter(func(w io.Writer) bool {
+		size, err := io.Copy(w, audio_file)
+		if err != nil {
+			mlog.Error("copy audio file failed", zap.Error(err))
+			return false
+		}
+		if size == 0 {
+			return false
+		}
+		return true
+	})
+
 	return nil
 }

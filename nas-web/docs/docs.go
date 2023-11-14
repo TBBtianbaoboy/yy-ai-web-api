@@ -119,6 +119,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/audio/speech": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Generate audio from the input text",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Audio"
+                ],
+                "summary": "Generate audio from the input text",
+                "parameters": [
+                    {
+                        "description": "request data",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/formjson.SpeechReq"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response data",
+                        "schema": {
+                            "$ref": "#/definitions/formjson.StatusResp"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/audio/transcriptions": {
             "post": {
                 "security": [
@@ -1082,6 +1128,31 @@ const docTemplate = `{
                 },
                 "question": {
                     "description": "chat content",
+                    "type": "string"
+                }
+            }
+        },
+        "formjson.SpeechReq": {
+            "type": "object",
+            "properties": {
+                "format": {
+                    "description": "format of generated audio",
+                    "type": "string"
+                },
+                "input": {
+                    "description": "input text used to generate audio",
+                    "type": "string"
+                },
+                "model_name": {
+                    "description": "audio model name",
+                    "type": "string"
+                },
+                "speed": {
+                    "description": "speed of generated audio",
+                    "type": "number"
+                },
+                "voice": {
+                    "description": "voice type of generated audio",
                     "type": "string"
                 }
             }

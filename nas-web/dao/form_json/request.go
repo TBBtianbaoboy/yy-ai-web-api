@@ -52,6 +52,15 @@ type TranscriptionsReq struct {
 	Language string `json:"language" form:"language"` // input audio language [optional]
 }
 
+// audio [Ok]
+type SpeechReq struct {
+	ModelName string  `json:"model_name"` // audio model name < tts-1 | tts-1-hd, {optional,default tts-1} >
+	Input     string  `json:"input"`      // input text used to generate audio == < user input, {required,not empty} >
+	Voice     string  `json:"voice"`      // voice type of generated audio == < alloy | echo | fable | onyx | nova | shimmer, {required,not empty} >
+	Speed     float64 `json:"speed"`      // speed of generated audio == < 0.25-4.0 {optional,default 1.0} >
+	Format    string  `json:"format"`     // format of generated audio == < mp3 | opus | aac | flac, {optional,default mp3} >
+}
+
 // chat [Ok]
 type SendNoContextNoStreamChatReq struct {
 	ModelName string `json:"model_name"` // chat model name

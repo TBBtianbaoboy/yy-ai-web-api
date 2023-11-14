@@ -9,4 +9,5 @@ import (
 
 func RegisterAudioRouter(party router.Party) {
 	party.Handle("POST", "/transcriptions", wrapper.Handler(controller.AudioController{}.Transcriptions))
+	party.Handle("POST", "/speech", wrapper.Handler(controller.AudioController{}.Speech))
 }

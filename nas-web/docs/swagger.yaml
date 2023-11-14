@@ -220,6 +220,24 @@ definitions:
         description: chat content
         type: string
     type: object
+  formjson.SpeechReq:
+    properties:
+      format:
+        description: format of generated audio
+        type: string
+      input:
+        description: input text used to generate audio
+        type: string
+      model_name:
+        description: audio model name
+        type: string
+      speed:
+        description: speed of generated audio
+        type: number
+      voice:
+        description: voice type of generated audio
+        type: string
+    type: object
   formjson.StatusResp:
     properties:
       status:
@@ -334,6 +352,35 @@ paths:
       summary: 基础接口 - 获取验证码
       tags:
       - common
+  /v1/audio/speech:
+    post:
+      consumes:
+      - application/json
+      description: Generate audio from the input text
+      parameters:
+      - description: request data
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/formjson.SpeechReq'
+      - description: authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response data
+          schema:
+            $ref: '#/definitions/formjson.StatusResp'
+      security:
+      - ApiKeyAuth: []
+      summary: Generate audio from the input text
+      tags:
+      - Audio
   /v1/audio/transcriptions:
     post:
       consumes:

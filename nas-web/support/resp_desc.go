@@ -68,4 +68,5 @@ const (
 	GetAudioFileFailed               string = "获取音频文件失败"
 	ServerTranscriptionFailed        string = "音频转换失败"
 	ServerGenerateImageFailed        string = "生成图片失败"
+	ServerGenerateAudioFailed        string = "生成音频失败"
 )

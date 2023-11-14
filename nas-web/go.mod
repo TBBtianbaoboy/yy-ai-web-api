@@ -11,7 +11,7 @@ require (
 	github.com/jcmturner/gofork v1.0.0
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/mojocn/base64Captcha v0.0.0-20190509095025-87c9c59224d8
-	github.com/sashabaranov/go-openai v1.17.5
+	github.com/sashabaranov/go-openai v1.17.6
 	github.com/satori/go.uuid v1.2.0
 	github.com/swaggo/swag v1.16.2
 	github.com/tal-tech/go-zero v1.2.5
