@@ -1,12 +1,12 @@
-//---------------------------------
-//File Name    : jwt.go
-//Author       : aico
-//Mail         : 2237616014@qq.com
-//Github       : https://github.com/TBBtianbaoboy
-//Site         : https://www.lengyangyu520.cn
-//Create Time  : 2021-12-17 14:44:24
-//Description  :
-//----------------------------------
+// ---------------------------------
+// File Name    : jwt.go
+// Author       : aico
+// Mail         : 2237616014@qq.com
+// Github       : https://github.com/TBBtianbaoboy
+// Site         : https://www.lengyangyu520.cn
+// Create Time  : 2021-12-17 14:44:24
+// Description  :
+// ----------------------------------
 package jwt
 
 import (
@@ -26,9 +26,9 @@ import (
 )
 
 type (
-	errorHandler func(context.Context,string) // 用来处理错误
-	TokenExtractor func(context.Context)(string,error) // 用来提取jwt token
-	Jwts struct{
+	errorHandler   func(context.Context, string)         // 用来处理错误
+	TokenExtractor func(context.Context) (string, error) // 用来提取jwt token
+	Jwts           struct {
 		Config Config
 	}
 )
@@ -40,7 +40,7 @@ var (
 	SysToken  string //System info 防jwt重放
 )
 
-//Func 用于校验jwt token 是否正确
+// Func 用于校验jwt token 是否正确
 func Server(ctx context.Context) bool {
 	ConfigJWT()
 	if err := jwts.CheckJWT(ctx); err != nil {
@@ -50,7 +50,7 @@ func Server(ctx context.Context) bool {
 	return true
 }
 
-//Func 获取请求头部中的jwt token (nas)
+// Func 获取请求头部中的jwt token (nas)
 func GetAuthHeader(ctx context.Context) (string, error) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
@@ -59,12 +59,12 @@ func GetAuthHeader(ctx context.Context) (string, error) {
 
 	authHeaderParts := strings.Split(authHeader, " ")
 	if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "nas" {
-		return "", fmt.Errorf("Authorization header format must be nas {token} ")
+		return "", fmt.Errorf("Authorization header format must be Nas {token} ")
 	}
 	return authHeaderParts[1], nil
 }
 
-//Func 配置jwt中间件
+// Func 配置jwt中间件
 func ConfigJWT() {
 	if jwts != nil {
 		return
@@ -91,7 +91,7 @@ func ConfigJWT() {
 	jwts = &Jwts{Config: cfg}
 }
 
-//Func 检验jwt的token是否正确
+// Func 检验jwt的token是否正确
 func (j *Jwts) CheckJWT(ctx context.Context) error {
 	if !j.Config.EnableAuthOnOptions {
 		if ctx.Method() == iris.MethodOptions {
@@ -117,7 +117,7 @@ func (j *Jwts) CheckJWT(ctx context.Context) error {
 		return fmt.Errorf(support.TokenExpire)
 	}
 	// 校验jwt的token是否在白名单中
-	if !redis.IsJwtInWhiteList(token){
+	if !redis.IsJwtInWhiteList(token) {
 		return fmt.Errorf(support.TokenExpire)
 	} else {
 		// jwt token正确则自动续期
@@ -144,8 +144,8 @@ func (j *Jwts) CheckJWT(ctx context.Context) error {
 	}
 	if claims, ok := parseToken.Claims.(jwt.MapClaims); ok {
 		user := &models.UserToken{
-			UserId:       int(claims["userId"].(float64)),
-			UserType:      int(claims["userType"].(float64)),
+			UserId:   int(claims["userId"].(float64)),
+			UserType: int(claims["userType"].(float64)),
 		}
 		ctx.Values().Set(j.Config.ContextKey, user)
 	}
@@ -168,8 +168,7 @@ func (j *Jwts) logf(format string, args ...interface{}) {
 }
 
 type Claims struct {
-	UserId       int `json:"userId"`
-	UserType     int `json:"userType"`
+	UserId   int `json:"userId"`
+	UserType int `json:"userType"`
 	jwt.StandardClaims
 }
-
