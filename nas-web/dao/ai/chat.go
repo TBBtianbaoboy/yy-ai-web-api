@@ -23,6 +23,9 @@ func (c *chat) RunWithNoContextNoStream(modelName string, question string) (stri
 			},
 		},
 	})
+	if err != nil {
+		return "", err
+	}
 	return resp.Choices[0].Message.Content, err
 }
 

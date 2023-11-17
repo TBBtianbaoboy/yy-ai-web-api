@@ -38,7 +38,6 @@ func SendNoContextNoStreamChatHandler(ctx *wrapper.Context, reqBody interface{})
 // SendNoContextStreamChatHandler 发送无上下文流式聊天
 func SendNoContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) error {
 	req := reqBody.(*formjson.SendNoContextStreamChatReq)
-	resp := formjson.StatusResp{Status: "OK"}
 
 	stream, err := ai.Chat.RunWithNoContextStream(req.ModelName, req.Question)
 	if err != nil {
@@ -57,11 +56,11 @@ func SendNoContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) e
 	ctx.ContentType("text/event-stream")
 	ctx.Header("Cache-Control", "no-cache")
 	ctx.Header("Connection", "keep-alive")
+	ctx.Header("Transfer-Encoding", "chunked")
 	for {
 		response, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
 			ctx.Writef("event: the end of stream\n")
-			support.SendApiResponse(ctx, resp, "")
 			return nil
 		}
 
@@ -71,7 +70,8 @@ func SendNoContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) e
 			return err
 		}
 
-		ctx.Writef("data: %s\n", response.Choices[0].Delta.Content)
+		// must end with \n\n
+		ctx.Writef("data: %s\n\n", response.Choices[0].Delta.Content)
 		flusher.Flush()
 	}
 }
