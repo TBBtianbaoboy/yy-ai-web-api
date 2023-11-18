@@ -21,5 +21,8 @@ func (a *image) Generate(req *formjson.GenerateImageReq) (string, error) {
 		ResponseFormat: openai.CreateImageResponseFormatB64JSON,
 		Quality:        req.Quality,
 	})
+	if err != nil {
+		return "", err
+	}
 	return resp.Data[0].B64JSON, err
 }
