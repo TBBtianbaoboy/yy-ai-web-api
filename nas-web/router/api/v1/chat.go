@@ -12,4 +12,5 @@ func RegisterChatRouter(party router.Party) {
 	party.Handle("POST", "/no_context_stream", wrapper.Handler(controller.ChatController{}.SendNoContextStreamChat))
 	party.Handle("POST", "/context_stream", wrapper.Handler(controller.ChatController{}.SendContextStreamChat))
 	party.Handle("DELETE", "/delete_context_stream", wrapper.Handler(controller.ChatController{}.DeleteContextStreamChat))
+	party.Handle("GET", "/get_sessions", wrapper.Handler(controller.ChatController{}.GetAllSessions))
 }

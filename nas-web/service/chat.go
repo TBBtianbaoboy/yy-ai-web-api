@@ -184,3 +184,24 @@ func DeleteContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) (
 
 	return
 }
+
+// GetAllSessionsHandler 获取指定用户的所有会话
+func GetAllSessionsHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
+	var userDoc models.User
+	if err = mongo.User.FindByUid(ctx, ctx.UserToken.UserId, &userDoc); err != nil {
+		mlog.Error("get current user info failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.GetUserInfoFailed, 0)
+		return nil
+	}
+	resp := formjson.GetUserInfoResp{
+		Uid:        userDoc.UID,
+		UserType:   userDoc.UserType,
+		UserName:   userDoc.UserName,
+		Email:      userDoc.Mail,
+		Phone:      userDoc.Mobile,
+		PS:         userDoc.PasswordStrength,
+		CreateTime: userDoc.InsertTm.Unix(),
+	}
+	support.SendApiResponse(ctx, resp, "")
+	return
+}

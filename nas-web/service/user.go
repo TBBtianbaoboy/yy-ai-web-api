@@ -1,16 +1,6 @@
-//---------------------------------
-//File Name    : service/user.go
-//Author       : aico
-//Mail         : 2237616014@qq.com
-//Github       : https://github.com/TBBtianbaoboy
-//Site         : https://www.lengyangyu520.cn
-//Create Time  : 2021-12-18 16:26:53
-//Description  :
-//----------------------------------
 package service
 
 import (
-	"fmt"
 	"nas-common/mlog"
 	"nas-common/models"
 	"nas-common/utils"
@@ -202,7 +192,7 @@ func UpdateUserStatusHandler(ctx *wrapper.Context, reqBody interface{}) (err err
 	return
 }
 
-//GetUserInfoHandler 获取当前用户个人信息 ok
+// GetUserInfoHandler 获取当前用户个人信息 ok
 func GetUserInfoHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
 	var userDoc models.User
 	if err = mongo.User.FindByUid(ctx, ctx.UserToken.UserId, &userDoc); err != nil {
@@ -219,7 +209,6 @@ func GetUserInfoHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
 		PS:         userDoc.PasswordStrength,
 		CreateTime: userDoc.InsertTm.Unix(),
 	}
-	fmt.Println(userDoc.Mail)
 	support.SendApiResponse(ctx, resp, "")
 	return
 }

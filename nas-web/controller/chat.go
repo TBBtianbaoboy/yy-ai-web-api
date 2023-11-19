@@ -64,3 +64,16 @@ func (a ChatController) SendContextStreamChat(ctx *wrapper.Context) {
 func (a ChatController) DeleteContextStreamChat(ctx *wrapper.Context) {
 	wrapper.ApiWrapper(ctx, service.DeleteContextStreamChatHandler, true, &formjson.DeleteContextStreamChatReq{}, &wrapper.ApiConfig{ReqType: support.CHECKTYPE_JSON})
 }
+
+// @Summary 获取指定用户的所有会话列表
+// @Description get all sessions list by user id
+// @Tags Chat
+// @Accept x-www-form-urlencoded
+// @Produce json
+// @Success 200 {object} formjson.GetAllSessionsResp "response data"
+// @Router /v1/chat/get_sessions [get]
+// @Security ApiKeyAuth
+// @Param Authorization header string true "authentication"
+func (a ChatController) GetAllSessions(ctx *wrapper.Context) {
+	wrapper.ApiWrapper(ctx, service.GetAllSessionsHandler, false, nil, nil)
+}
