@@ -1,12 +1,3 @@
-//---------------------------------
-//File Name    : user.go
-//Author       : aico
-//Mail         : 2237616014@qq.com
-//Github       : https://github.com/TBBtianbaoboy
-//Site         : https://www.lengyangyu520.cn
-//Create Time  : 2021-12-18 16:18:20
-//Description  :
-//----------------------------------
 package controller
 
 import (

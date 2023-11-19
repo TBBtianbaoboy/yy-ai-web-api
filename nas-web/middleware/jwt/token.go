@@ -1,12 +1,3 @@
-//---------------------------------
-//File Name    : middleware/jwt/token.go
-//Author       : aico
-//Mail         : 2237616014@qq.com
-//Github       : https://github.com/TBBtianbaoboy
-//Site         : https://www.lengyangyu520.cn
-//Create Time  : 2021-12-17 16:59:55
-//Description  :
-//----------------------------------
 package jwt
 
 import (
@@ -19,7 +10,7 @@ import (
 	"github.com/kataras/iris/v12/context"
 )
 
-//Func 生成jwt token
+// Func 生成jwt token
 func GenerateToken(user *models.UserToken, secretKey string, keep bool) (token string, err error) {
 	var expireTime time.Time
 	if keep {
@@ -42,8 +33,8 @@ func GenerateToken(user *models.UserToken, secretKey string, keep bool) (token s
 
 // 获取用户Token
 func GetUserToken(ctx context.Context) *models.UserToken {
-	if ctx.Values().Get(DefaultContextKey) != nil {
-		return ctx.Values().Get(DefaultContextKey).(*models.UserToken)
+	if userToekn := ctx.Values().Get(DefaultContextKey); userToekn != nil {
+		return userToekn.(*models.UserToken)
 	}
 	return nil
 }
@@ -67,6 +58,6 @@ func GetTokenRemainingTime(token string) int32 {
 }
 
 func InitSysToken() {
-		SysToken = webutils.String.Hash(webutils.System.GetWebIP(),webutils.System.GetWebMacAddress())
-		JwtSecKey += SysToken
+	SysToken = webutils.String.Hash(webutils.System.GetWebIP(), webutils.System.GetWebMacAddress())
+	JwtSecKey += SysToken
 }
