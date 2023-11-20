@@ -113,6 +113,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 	ctx.ContentType("text/event-stream")
 	ctx.Header("Cache-Control", "no-cache")
 	ctx.Header("Connection", "keep-alive")
+	ctx.Header("Transfer-Encoding", "chunked")
 
 	// [5]: receive stream data
 	for {
@@ -129,7 +130,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 			return err
 		}
 
-		ctx.Writef("data: %s\n", response.Choices[0].Delta.Content)
+		ctx.Writef("data: %s\n\n", response.Choices[0].Delta.Content)
 		output = append(output, response.Choices[0].Delta.Content)
 		flusher.Flush()
 	}
@@ -210,27 +211,26 @@ func GetAllSessionsHandler(ctx *wrapper.Context, reqBody interface{}) (err error
 	return
 }
 
-// GetSessionMessagesHandler 获取指定会话的所有消息 TODO
+// GetSessionMessagesHandler 获取指定会话的所有消息
 func GetSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
-	var sessionMessagesDescs []models.SessionMessagesDesc
-	if sessionMessagesDescs, err = mongo.Chat.GetAllSessionsByUid(ctx, ctx.UserToken.UserId); err != nil {
-		mlog.Error("get all sessions failed", zap.Error(err))
-		support.SendApiErrorResponse(ctx, support.ServerGetAllSessionsFailed, 0)
+	req := reqBody.(*formjson.GetSessionMessagesReq)
+	resp := formjson.GetSessionMessagesResp{Uid: ctx.UserToken.UserId}
+	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
+	var sessionMessagesDesc models.SessionMessagesDesc
+	if sessionMessagesDesc, err, _ = mongo.Chat.GetByUSid(ctx, usid); err != nil {
+		mlog.Error("get session messages failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerGetSessionMessageFailed, 0)
 		return nil
 	}
-	datas := make([]formjson.SessionData, 0, len(sessionMessagesDescs))
-	for _, sessionMessagesDesc := range sessionMessagesDescs {
-		datas = append(datas, formjson.SessionData{
-			SessionId:   sessionMessagesDesc.SessionId,
-			SessionName: "会话 " + strconv.Itoa(sessionMessagesDesc.SessionId),
-			CreateTime:  sessionMessagesDesc.StartTime.Unix(),
+	messages := make([]formjson.SessionMessages, 0, len(sessionMessagesDesc.Messages))
+	for _, message := range sessionMessagesDesc.Messages {
+		messages = append(messages, formjson.SessionMessages{
+			Role:    message.Role,
+			Content: message.Content,
 		})
 	}
 
-	resp := formjson.GetAllSessionsResp{
-		Uid:   ctx.UserToken.UserId,
-		Datas: datas,
-	}
+	resp.Messages = messages
 	support.SendApiResponse(ctx, resp, "")
 	return
 }

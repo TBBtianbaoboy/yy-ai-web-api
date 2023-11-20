@@ -74,6 +74,17 @@ type GetAllSessionsResp struct {
 	Datas []SessionData `json:"datas"` //session data
 }
 
+// chat [ok]
+type SessionMessages struct {
+	Role    string `json:"role"`    //消息角色
+	Content string `json:"content"` //消息内容
+}
+
+type GetSessionMessagesResp struct {
+	Uid      int               `json:"uid"`      //用户id
+	Messages []SessionMessages `json:"messages"` //session messages
+}
+
 // service scan.go
 type GetFirstScanResultResp struct {
 	All             string           `json:"all"`       //all count
