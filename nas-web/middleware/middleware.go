@@ -1,18 +1,9 @@
-//---------------------------------
-//File Name    : middleware.go
-//Author       : aico
-//Mail         : 2237616014@qq.com
-//Github       : https://github.com/TBBtianbaoboy
-//Site         : https://www.lengyangyu520.cn
-//Create Time  : 2021-12-18 14:41:57
-//Description  :
-//----------------------------------
 package middleware
 
 import (
 	"nas-web/config"
-	"nas-web/middleware/jwt"
 	"nas-web/middleware/basic"
+	"nas-web/middleware/jwt"
 	"nas-web/support"
 
 	"github.com/kataras/iris/v12"

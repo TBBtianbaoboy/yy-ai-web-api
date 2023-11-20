@@ -17,20 +17,20 @@ import (
 	"github.com/kataras/iris/v12/context"
 )
 
-type systemConfig struct {}
+type systemConfig struct{}
 
 var SystemConfig systemConfig
 
-func (systemConfig)Get(ctx context.Context)(systemConfigDoc models.SystemConfig){
+func (systemConfig) Get(ctx context.Context) (systemConfigDoc models.SystemConfig) {
 	var ok bool
 	dbName := systemConfigDoc.Collection()
 	ok, _ = db.MongoCli.FindOne(dbName, bson.M{}, &systemConfigDoc)
 	if !ok {
 		systemConfigDoc = models.SystemConfig{
-			PwdFlushCycle:     90, //默认密码过期时间(天)
-			NoOpExitTm:        30, //默认页面无操作自动退出时间(分钟)
-			LoginFailedCount:  5,  //默认允许登录失败次数
-			LoginFailedLockTm: 3,  //默认登录失败锁定时间(分钟)
+			PwdFlushCycle:     90,  //默认密码过期时间(天)
+			NoOpExitTm:        300, //默认页面无操作自动退出时间(分钟)
+			LoginFailedCount:  5,   //默认允许登录失败次数
+			LoginFailedLockTm: 3,   //默认登录失败锁定时间(分钟)
 		}
 	}
 	return
