@@ -86,6 +86,11 @@ type DeleteContextStreamChatReq struct {
 	SessionId int `json:"session_id"` // session id
 }
 
+// chat [Ok]
+type GetSessionMessagesReq struct {
+	SessionId int `json:"session_id" form:"session_id"` // session id
+}
+
 type DeleteScanReq struct {
 	ScanIds []string `json:"scan_ids"` //to be deleted scan id set
 }

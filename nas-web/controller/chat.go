@@ -71,9 +71,23 @@ func (a ChatController) DeleteContextStreamChat(ctx *wrapper.Context) {
 // @Accept x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} formjson.GetAllSessionsResp "response data"
-// @Router /v1/chat/get_sessions [get]
+// @Router /v1/chat/get_all_sessions [get]
 // @Security ApiKeyAuth
 // @Param Authorization header string true "authentication"
 func (a ChatController) GetAllSessions(ctx *wrapper.Context) {
 	wrapper.ApiWrapper(ctx, service.GetAllSessionsHandler, false, nil, nil)
+}
+
+// @Summary 获取指定会话的所有消息
+// @Description get session messages by session id
+// @Tags Chat
+// @Accept x-www-form-urlencoded
+// @Produce json
+// @Param auth query formjson.GetSessionMessagesReq true "request data"
+// @Success 200 {object} formjson.GetSessionMessagesResp "response data"
+// @Router /v1/chat/get_session_messages [get]
+// @Security ApiKeyAuth
+// @Param Authorization header string true "authentication"
+func (a ChatController) GetSessionMessages(ctx *wrapper.Context) {
+	wrapper.ApiWrapper(ctx, service.GetSessionMessagesHandler, true, &formjson.GetSessionMessagesReq{}, &wrapper.ApiConfig{ReqType: support.CHECKTYPE_FORM})
 }

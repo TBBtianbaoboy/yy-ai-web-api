@@ -187,20 +187,49 @@ func DeleteContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) (
 
 // GetAllSessionsHandler 获取指定用户的所有会话
 func GetAllSessionsHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
-	var userDoc models.User
-	if err = mongo.User.FindByUid(ctx, ctx.UserToken.UserId, &userDoc); err != nil {
-		mlog.Error("get current user info failed", zap.Error(err))
-		support.SendApiErrorResponse(ctx, support.GetUserInfoFailed, 0)
+	var sessionMessagesDescs []models.SessionMessagesDesc
+	if sessionMessagesDescs, err = mongo.Chat.GetAllSessionsByUid(ctx, ctx.UserToken.UserId); err != nil {
+		mlog.Error("get all sessions failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerGetAllSessionsFailed, 0)
 		return nil
 	}
-	resp := formjson.GetUserInfoResp{
-		Uid:        userDoc.UID,
-		UserType:   userDoc.UserType,
-		UserName:   userDoc.UserName,
-		Email:      userDoc.Mail,
-		Phone:      userDoc.Mobile,
-		PS:         userDoc.PasswordStrength,
-		CreateTime: userDoc.InsertTm.Unix(),
+	datas := make([]formjson.SessionData, 0, len(sessionMessagesDescs))
+	for _, sessionMessagesDesc := range sessionMessagesDescs {
+		datas = append(datas, formjson.SessionData{
+			SessionId:   sessionMessagesDesc.SessionId,
+			SessionName: "会话 " + strconv.Itoa(sessionMessagesDesc.SessionId),
+			CreateTime:  sessionMessagesDesc.StartTime.Unix(),
+		})
+	}
+
+	resp := formjson.GetAllSessionsResp{
+		Uid:   ctx.UserToken.UserId,
+		Datas: datas,
+	}
+	support.SendApiResponse(ctx, resp, "")
+	return
+}
+
+// GetSessionMessagesHandler 获取指定会话的所有消息 TODO
+func GetSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
+	var sessionMessagesDescs []models.SessionMessagesDesc
+	if sessionMessagesDescs, err = mongo.Chat.GetAllSessionsByUid(ctx, ctx.UserToken.UserId); err != nil {
+		mlog.Error("get all sessions failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerGetAllSessionsFailed, 0)
+		return nil
+	}
+	datas := make([]formjson.SessionData, 0, len(sessionMessagesDescs))
+	for _, sessionMessagesDesc := range sessionMessagesDescs {
+		datas = append(datas, formjson.SessionData{
+			SessionId:   sessionMessagesDesc.SessionId,
+			SessionName: "会话 " + strconv.Itoa(sessionMessagesDesc.SessionId),
+			CreateTime:  sessionMessagesDesc.StartTime.Unix(),
+		})
+	}
+
+	resp := formjson.GetAllSessionsResp{
+		Uid:   ctx.UserToken.UserId,
+		Datas: datas,
 	}
 	support.SendApiResponse(ctx, resp, "")
 	return

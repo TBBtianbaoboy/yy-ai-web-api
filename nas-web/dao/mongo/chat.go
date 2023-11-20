@@ -44,12 +44,11 @@ func (chat) DeleteSession(ctx context.Context, usid string) (err error) {
 	return
 }
 
-// TODO
-func (chat) GetAllSessionsByUid(ctx context.Context, uid int) (err error) {
+func (chat) GetAllSessionsByUid(ctx context.Context, uid int) (sessionMessagesDescs []models.SessionMessagesDesc, err error) {
 	dbName := (&models.SessionMessagesDesc{}).Collection()
 	query := bson.M{
 		"uid": uid,
 	}
-	err = db.MongoCli.RemoveAll(dbName, query)
+	err = db.MongoCli.FindAll(dbName, query, &sessionMessagesDescs)
 	return
 }

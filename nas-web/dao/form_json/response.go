@@ -63,6 +63,17 @@ type SendNoContextStreamChatResp struct {
 	Answer string `json:"answer"` //assistant answer
 }
 
+// chat [Ok]
+type SessionData struct {
+	SessionId   int    `json:"session_id"`   //会话ID
+	SessionName string `json:"session_name"` //会话名称
+	CreateTime  int64  `json:"create_time"`  //创建时间
+}
+type GetAllSessionsResp struct {
+	Uid   int           `json:"uid"`   //用户id
+	Datas []SessionData `json:"datas"` //session data
+}
+
 // service scan.go
 type GetFirstScanResultResp struct {
 	All             string           `json:"all"`       //all count

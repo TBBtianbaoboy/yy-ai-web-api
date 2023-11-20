@@ -69,4 +69,5 @@ const (
 	ServerTranscriptionFailed        string = "音频转换失败"
 	ServerGenerateImageFailed        string = "生成图片失败"
 	ServerGenerateAudioFailed        string = "生成音频失败"
+	ServerGetAllSessionsFailed       string = "获取会话失败"
 )
