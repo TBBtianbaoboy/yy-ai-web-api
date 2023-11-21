@@ -131,7 +131,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "produces": [
-                    "application/json"
+                    "application/octet-stream"
                 ],
                 "tags": [
                     "Audio"
@@ -159,7 +159,7 @@ const docTemplate = `{
                     "200": {
                         "description": "response data",
                         "schema": {
-                            "$ref": "#/definitions/formjson.StatusResp"
+                            "type": "file"
                         }
                     }
                 }
@@ -307,16 +307,16 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/chat/no_context_no_stream": {
-            "post": {
+        "/v1/chat/get_all_sessions": {
+            "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "send no context no stream chat",
+                "description": "get all sessions list by user id",
                 "consumes": [
-                    "application/json"
+                    "application/x-www-form-urlencoded"
                 ],
                 "produces": [
                     "application/json"
@@ -324,16 +324,50 @@ const docTemplate = `{
                 "tags": [
                     "Chat"
                 ],
-                "summary": "发送无上下文无流式聊天",
+                "summary": "获取指定用户的所有会话列表",
                 "parameters": [
                     {
-                        "description": "request data",
-                        "name": "auth",
-                        "in": "body",
-                        "required": true,
+                        "type": "string",
+                        "description": "authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response data",
                         "schema": {
-                            "$ref": "#/definitions/formjson.SendNoContextNoStreamChatReq"
+                            "$ref": "#/definitions/formjson.GetAllSessionsResp"
                         }
+                    }
+                }
+            }
+        },
+        "/v1/chat/get_session_messages": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get session messages by session id",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "获取指定会话的所有消息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "session id",
+                        "name": "session_id",
+                        "in": "query"
                     },
                     {
                         "type": "string",
@@ -347,7 +381,7 @@ const docTemplate = `{
                     "200": {
                         "description": "response data",
                         "schema": {
-                            "$ref": "#/definitions/formjson.SendNoContextNoStreamChatResp"
+                            "$ref": "#/definitions/formjson.GetSessionMessagesResp"
                         }
                     }
                 }
@@ -379,6 +413,96 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/formjson.SendNoContextStreamChatReq"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response data",
+                        "schema": {
+                            "$ref": "#/definitions/formjson.StatusResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/chat/session": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update existed session",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "更新会话",
+                "parameters": [
+                    {
+                        "description": "request data",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/formjson.UpdateSessionReq"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response data",
+                        "schema": {
+                            "$ref": "#/definitions/formjson.StatusResp"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create new session",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "新建会话",
+                "parameters": [
+                    {
+                        "description": "request data",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/formjson.CreateSessionReq"
                         }
                     },
                     {
@@ -859,6 +983,38 @@ const docTemplate = `{
                 }
             }
         },
+        "formjson.CreateSessionReq": {
+            "type": "object",
+            "properties": {
+                "max_tokens": {
+                    "description": "输入+输出的最大长度",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "模型名称",
+                    "type": "string"
+                },
+                "session_name": {
+                    "description": "会话名称",
+                    "type": "string"
+                },
+                "stop": {
+                    "description": "匹配到这些词时停止生成",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "system": {
+                    "description": "模型系统内容",
+                    "type": "string"
+                },
+                "temperature": {
+                    "description": "生成文本的多样性",
+                    "type": "number"
+                }
+            }
+        },
         "formjson.DeleteContextStreamChatReq": {
             "type": "object",
             "properties": {
@@ -930,6 +1086,38 @@ const docTemplate = `{
                 "base64": {
                     "description": "image content",
                     "type": "string"
+                }
+            }
+        },
+        "formjson.GetAllSessionsResp": {
+            "type": "object",
+            "properties": {
+                "datas": {
+                    "description": "session data",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/formjson.SessionData"
+                    }
+                },
+                "uid": {
+                    "description": "用户id",
+                    "type": "integer"
+                }
+            }
+        },
+        "formjson.GetSessionMessagesResp": {
+            "type": "object",
+            "properties": {
+                "messages": {
+                    "description": "session messages",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/formjson.SessionMessages"
+                    }
+                },
+                "uid": {
+                    "description": "用户id",
+                    "type": "integer"
                 }
             }
         },
@@ -1083,10 +1271,6 @@ const docTemplate = `{
         "formjson.SendContextStreamChatReq": {
             "type": "object",
             "properties": {
-                "model_name": {
-                    "description": "chat model name",
-                    "type": "string"
-                },
                 "question": {
                     "description": "chat content",
                     "type": "string"
@@ -1094,28 +1278,6 @@ const docTemplate = `{
                 "session_id": {
                     "description": "session id",
                     "type": "integer"
-                }
-            }
-        },
-        "formjson.SendNoContextNoStreamChatReq": {
-            "type": "object",
-            "properties": {
-                "model_name": {
-                    "description": "chat model name",
-                    "type": "string"
-                },
-                "question": {
-                    "description": "System    string ` + "`" + `json:\"system\"` + "`" + `     // model system content",
-                    "type": "string"
-                }
-            }
-        },
-        "formjson.SendNoContextNoStreamChatResp": {
-            "type": "object",
-            "properties": {
-                "answer": {
-                    "description": "assistant answer",
-                    "type": "string"
                 }
             }
         },
@@ -1132,27 +1294,57 @@ const docTemplate = `{
                 }
             }
         },
+        "formjson.SessionData": {
+            "type": "object",
+            "properties": {
+                "create_time": {
+                    "description": "创建时间",
+                    "type": "integer"
+                },
+                "session_id": {
+                    "description": "会话ID",
+                    "type": "integer"
+                },
+                "session_name": {
+                    "description": "会话名称",
+                    "type": "string"
+                }
+            }
+        },
+        "formjson.SessionMessages": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "消息内容",
+                    "type": "string"
+                },
+                "role": {
+                    "description": "消息角色",
+                    "type": "string"
+                }
+            }
+        },
         "formjson.SpeechReq": {
             "type": "object",
             "properties": {
                 "format": {
-                    "description": "format of generated audio",
+                    "description": "format of generated audio == \u003c mp3 | opus | aac | flac, {optional,default mp3} \u003e",
                     "type": "string"
                 },
                 "input": {
-                    "description": "input text used to generate audio",
+                    "description": "input text used to generate audio == \u003c user input, {required,not empty} \u003e",
                     "type": "string"
                 },
                 "model_name": {
-                    "description": "audio model name",
+                    "description": "audio model name \u003c tts-1 | tts-1-hd, {optional,default tts-1} \u003e",
                     "type": "string"
                 },
                 "speed": {
-                    "description": "speed of generated audio",
+                    "description": "speed of generated audio == \u003c 0.25-4.0 {optional,default 1.0} \u003e",
                     "type": "number"
                 },
                 "voice": {
-                    "description": "voice type of generated audio",
+                    "description": "voice type of generated audio == \u003c alloy | echo | fable | onyx | nova | shimmer, {required,not empty} \u003e",
                     "type": "string"
                 }
             }
@@ -1172,6 +1364,38 @@ const docTemplate = `{
                 "text": {
                     "description": "assistant answer",
                     "type": "string"
+                }
+            }
+        },
+        "formjson.UpdateSessionReq": {
+            "type": "object",
+            "properties": {
+                "max_tokens": {
+                    "description": "输入+输出的最大长度",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "模型名称",
+                    "type": "string"
+                },
+                "session_id": {
+                    "description": "会话id",
+                    "type": "integer"
+                },
+                "session_name": {
+                    "description": "会话名称",
+                    "type": "string"
+                },
+                "stop": {
+                    "description": "匹配到这些词时停止生成",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "temperature": {
+                    "description": "生成文本的多样性",
+                    "type": "number"
                 }
             }
         },

@@ -71,4 +71,7 @@ const (
 	ServerGenerateAudioFailed        string = "生成音频失败"
 	ServerGetAllSessionsFailed       string = "获取会话失败"
 	ServerGetSessionMessagesFailed   string = "获取会话消息失败"
+	ServerCreateSessionFailed        string = "新建会话失败"
+	ServerUpdateSessionFailed        string = "更新会话失败"
+	ChatSessionNotExist              string = "会话不存在"
 )

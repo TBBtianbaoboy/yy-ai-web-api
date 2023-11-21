@@ -62,13 +62,6 @@ type SpeechReq struct {
 }
 
 // chat [Ok]
-type SendNoContextNoStreamChatReq struct {
-	ModelName string `json:"model_name"` // chat model name
-	// System    string `json:"system"`     // model system content
-	Question string `json:"question"` // chat content
-}
-
-// chat [Ok]
 type SendNoContextStreamChatReq struct {
 	ModelName string `json:"model_name"` // chat model name
 	Question  string `json:"question"`   // chat content
@@ -76,7 +69,6 @@ type SendNoContextStreamChatReq struct {
 
 // chat [Ok]
 type SendContextStreamChatReq struct {
-	ModelName string `json:"model_name"` // chat model name
 	Question  string `json:"question"`   // chat content
 	SessionId int    `json:"session_id"` // session id
 }
@@ -89,6 +81,26 @@ type DeleteContextStreamChatReq struct {
 // chat [Ok]
 type GetSessionMessagesReq struct {
 	SessionId int `json:"session_id" form:"session_id"` // session id
+}
+
+// chat [Ok]
+type CreateSessionReq struct {
+	SessionName string   `json:"session_name"` // 会话名称
+	Model       string   `json:"model"`        // 模型名称
+	MaxTokens   int      `json:"max_tokens"`   // 输入+输出的最大长度
+	Temperature float32  `json:"temperature"`  // 生成文本的多样性
+	Stop        []string `json:"stop"`         // 匹配到这些词时停止生成
+	System      string   `json:"system"`       // 模型系统内容
+}
+
+// chat [Ok]
+type UpdateSessionReq struct {
+	SessionId   int      `json:"session_id"`   // 会话id
+	SessionName string   `json:"session_name"` // 会话名称
+	Model       string   `json:"model"`        // 模型名称
+	MaxTokens   int      `json:"max_tokens"`   // 输入+输出的最大长度
+	Temperature float32  `json:"temperature"`  // 生成文本的多样性
+	Stop        []string `json:"stop"`         // 匹配到这些词时停止生成
 }
 
 type DeleteScanReq struct {

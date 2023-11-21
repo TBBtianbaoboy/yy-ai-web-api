@@ -19,22 +19,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// SendNoContextNoStreamChatHandler 发送无上下文无流式聊天
-func SendNoContextNoStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
-	req := reqBody.(*formjson.SendNoContextNoStreamChatReq)
-	resp := formjson.SendNoContextNoStreamChatResp{}
-
-	resp.Answer, err = ai.Chat.RunWithNoContextNoStream(req.ModelName, req.Question)
-	if err != nil {
-		mlog.Error("create no context no stream chat failed", zap.Error(err))
-		support.SendApiErrorResponse(ctx, support.ServerCreateChatFailed, 0)
-		return
-	}
-
-	support.SendApiResponse(ctx, resp, "")
-	return
-}
-
 // SendNoContextStreamChatHandler 发送无上下文流式聊天
 func SendNoContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) error {
 	req := reqBody.(*formjson.SendNoContextStreamChatReq)
@@ -83,15 +67,15 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 
 	// [1]: check whether session exist
 	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
-	sessionMessagesDesc, err, exist := mongo.Chat.GetByUSid(ctx, usid)
+	sessionMessagesDesc, err := mongo.Chat.GetByUSid(ctx, usid)
 	if err != nil {
-		mlog.Error("get session message failed", zap.Error(err))
-		// support.SendApiErrorResponse(ctx, support.ServerGetSessionMessageFailed, 0)
-		// return err
+		mlog.Error("session not exist", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ChatSessionNotExist, 0)
+		return err
 	}
 
 	// [2]: create stream to run
-	stream, err := ai.Chat.RunWithContextStream(req.ModelName, req.Question, &sessionMessagesDesc)
+	stream, err := ai.Chat.RunWithContextStream(req.Question, &sessionMessagesDesc)
 	if err != nil {
 		mlog.Error("create context stream chat failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerCreateChatFailed, 0)
@@ -107,7 +91,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 		return errors.New("client not support SSE")
 	}
 
-	output := make([]string, 100)
+	output := make([]string, 1000)
 
 	// [4]: set SSE header
 	ctx.ContentType("text/event-stream")
@@ -125,7 +109,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 		}
 
 		if err != nil {
-			mlog.Error("receive no context stream chat failed", zap.Error(err))
+			mlog.Error("receive context stream chat failed", zap.Error(err))
 			support.SendApiErrorResponse(ctx, support.ServerReceiveChatFailed, 0)
 			return err
 		}
@@ -145,26 +129,11 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 		Content: strings.Join(output, ""),
 	},
 	)
-	if exist {
-		change := bson.M{"$push": bson.M{"messages": bson.M{"$each": sessionMessages}}} // append to inner message array
-		if err = mongo.Chat.AppendMessages(ctx, usid, change); err != nil {
-			mlog.Error("update session message failed", zap.Error(err))
-			support.SendApiErrorResponse(ctx, support.ServerUpdateSessionMessageFailed, 0)
-			return err
-		}
-	} else {
-		sessionMessagesDesc = models.SessionMessagesDesc{
-			USid:      usid,
-			Uid:       ctx.UserToken.UserId,
-			SessionId: req.SessionId,
-			StartTime: time.Now(),
-			Messages:  sessionMessages,
-		}
-		if err = mongo.Chat.AddSession(ctx, &sessionMessagesDesc); err != nil {
-			mlog.Error("add session message failed", zap.Error(err))
-			support.SendApiErrorResponse(ctx, support.ServerAddSessionMessageFailed, 0)
-			return err
-		}
+	change := bson.M{"$push": bson.M{"messages": bson.M{"$each": sessionMessages}}} // append to inner message array
+	if err = mongo.Chat.AppendMessages(ctx, usid, change); err != nil {
+		mlog.Error("update session message failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerUpdateSessionMessageFailed, 0)
+		return err
 	}
 	return nil
 }
@@ -198,7 +167,7 @@ func GetAllSessionsHandler(ctx *wrapper.Context, reqBody interface{}) (err error
 	for _, sessionMessagesDesc := range sessionMessagesDescs {
 		datas = append(datas, formjson.SessionData{
 			SessionId:   sessionMessagesDesc.SessionId,
-			SessionName: "会话 " + strconv.Itoa(sessionMessagesDesc.SessionId),
+			SessionName: sessionMessagesDesc.SessionName,
 			CreateTime:  sessionMessagesDesc.StartTime.Unix(),
 		})
 	}
@@ -217,7 +186,7 @@ func GetSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err e
 	resp := formjson.GetSessionMessagesResp{Uid: ctx.UserToken.UserId}
 	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
 	var sessionMessagesDesc models.SessionMessagesDesc
-	if sessionMessagesDesc, err, _ = mongo.Chat.GetByUSid(ctx, usid); err != nil {
+	if sessionMessagesDesc, err = mongo.Chat.GetByUSid(ctx, usid); err != nil {
 		mlog.Error("get session messages failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerGetSessionMessageFailed, 0)
 		return nil
@@ -231,6 +200,71 @@ func GetSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err e
 	}
 
 	resp.Messages = messages
+	support.SendApiResponse(ctx, resp, "")
+	return
+}
+
+// CreateSessionHandler 新建会话
+func CreateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
+	req := reqBody.(*formjson.CreateSessionReq)
+	resp := formjson.StatusResp{Status: "OK"}
+	newSessionId := mongo.Chat.GetMaxSessionId(ctx, ctx.UserToken.UserId)
+
+	messages := make([]models.SessionMessages, 0, 1)
+	messages = append(messages, models.SessionMessages{
+		Role: support.ChatMessageRoleSystem,
+		Content: func() string {
+			if req.System == "" {
+				return "You are a helpful assistant."
+			}
+			return req.System
+		}(),
+	})
+
+	sessionMessagesDesc := models.SessionMessagesDesc{
+		USid:        webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(newSessionId)),
+		Uid:         ctx.UserToken.UserId,
+		SessionId:   newSessionId,
+		StartTime:   time.Now(),
+		Model:       req.Model,
+		Temperature: req.Temperature,
+		MaxTokens:   req.MaxTokens,
+		Stop:        req.Stop,
+		SessionName: req.SessionName,
+		Messages:    messages,
+	}
+
+	if err = mongo.Chat.AddSession(ctx, &sessionMessagesDesc); err != nil {
+		mlog.Error("create session failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerCreateSessionFailed, 0)
+		return err
+	}
+
+	support.SendApiResponse(ctx, resp, "")
+	return
+}
+
+// UpdateSessionHandler 更新会话
+func UpdateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
+	req := reqBody.(*formjson.UpdateSessionReq)
+	resp := formjson.StatusResp{Status: "OK"}
+
+	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
+
+	update := bson.M{
+		"max_tokens":   req.MaxTokens,
+		"temperature":  req.Temperature,
+		"stop":         req.Stop,
+		"model":        req.Model,
+		"session_name": req.SessionName,
+	}
+
+	if err = mongo.Chat.UpdateModelParams(ctx, usid, update); err != nil {
+		mlog.Error("update session failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerUpdateSessionFailed, 0)
+		return err
+	}
+
 	support.SendApiResponse(ctx, resp, "")
 	return
 }

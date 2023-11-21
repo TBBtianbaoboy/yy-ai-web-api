@@ -27,6 +27,29 @@ definitions:
     - password
     - username
     type: object
+  formjson.CreateSessionReq:
+    properties:
+      max_tokens:
+        description: 输入+输出的最大长度
+        type: integer
+      model:
+        description: 模型名称
+        type: string
+      session_name:
+        description: 会话名称
+        type: string
+      stop:
+        description: 匹配到这些词时停止生成
+        items:
+          type: string
+        type: array
+      system:
+        description: 模型系统内容
+        type: string
+      temperature:
+        description: 生成文本的多样性
+        type: number
+    type: object
   formjson.DeleteContextStreamChatReq:
     properties:
       session_id:
@@ -77,6 +100,28 @@ definitions:
       base64:
         description: image content
         type: string
+    type: object
+  formjson.GetAllSessionsResp:
+    properties:
+      datas:
+        description: session data
+        items:
+          $ref: '#/definitions/formjson.SessionData'
+        type: array
+      uid:
+        description: 用户id
+        type: integer
+    type: object
+  formjson.GetSessionMessagesResp:
+    properties:
+      messages:
+        description: session messages
+        items:
+          $ref: '#/definitions/formjson.SessionMessages'
+        type: array
+      uid:
+        description: 用户id
+        type: integer
     type: object
   formjson.GetUserInfoResp:
     properties:
@@ -186,30 +231,12 @@ definitions:
     type: object
   formjson.SendContextStreamChatReq:
     properties:
-      model_name:
-        description: chat model name
-        type: string
       question:
         description: chat content
         type: string
       session_id:
         description: session id
         type: integer
-    type: object
-  formjson.SendNoContextNoStreamChatReq:
-    properties:
-      model_name:
-        description: chat model name
-        type: string
-      question:
-        description: System    string `json:"system"`     // model system content
-        type: string
-    type: object
-  formjson.SendNoContextNoStreamChatResp:
-    properties:
-      answer:
-        description: assistant answer
-        type: string
     type: object
   formjson.SendNoContextStreamChatReq:
     properties:
@@ -220,22 +247,48 @@ definitions:
         description: chat content
         type: string
     type: object
+  formjson.SessionData:
+    properties:
+      create_time:
+        description: 创建时间
+        type: integer
+      session_id:
+        description: 会话ID
+        type: integer
+      session_name:
+        description: 会话名称
+        type: string
+    type: object
+  formjson.SessionMessages:
+    properties:
+      content:
+        description: 消息内容
+        type: string
+      role:
+        description: 消息角色
+        type: string
+    type: object
   formjson.SpeechReq:
     properties:
       format:
-        description: format of generated audio
+        description: format of generated audio == < mp3 | opus | aac | flac, {optional,default
+          mp3} >
         type: string
       input:
-        description: input text used to generate audio
+        description: input text used to generate audio == < user input, {required,not
+          empty} >
         type: string
       model_name:
-        description: audio model name
+        description: audio model name < tts-1 | tts-1-hd, {optional,default tts-1}
+          >
         type: string
       speed:
-        description: speed of generated audio
+        description: speed of generated audio == < 0.25-4.0 {optional,default 1.0}
+          >
         type: number
       voice:
-        description: voice type of generated audio
+        description: voice type of generated audio == < alloy | echo | fable | onyx
+          | nova | shimmer, {required,not empty} >
         type: string
     type: object
   formjson.StatusResp:
@@ -249,6 +302,29 @@ definitions:
       text:
         description: assistant answer
         type: string
+    type: object
+  formjson.UpdateSessionReq:
+    properties:
+      max_tokens:
+        description: 输入+输出的最大长度
+        type: integer
+      model:
+        description: 模型名称
+        type: string
+      session_id:
+        description: 会话id
+        type: integer
+      session_name:
+        description: 会话名称
+        type: string
+      stop:
+        description: 匹配到这些词时停止生成
+        items:
+          type: string
+        type: array
+      temperature:
+        description: 生成文本的多样性
+        type: number
     type: object
   formjson.UpdateUserPasswdReq:
     properties:
@@ -370,12 +446,12 @@ paths:
         required: true
         type: string
       produces:
-      - application/json
+      - application/octet-stream
       responses:
         "200":
           description: response data
           schema:
-            $ref: '#/definitions/formjson.StatusResp'
+            type: file
       security:
       - ApiKeyAuth: []
       summary: Generate audio from the input text
@@ -471,18 +547,12 @@ paths:
       summary: 删除上下文流式聊天
       tags:
       - Chat
-  /v1/chat/no_context_no_stream:
-    post:
+  /v1/chat/get_all_sessions:
+    get:
       consumes:
-      - application/json
-      description: send no context no stream chat
+      - application/x-www-form-urlencoded
+      description: get all sessions list by user id
       parameters:
-      - description: request data
-        in: body
-        name: auth
-        required: true
-        schema:
-          $ref: '#/definitions/formjson.SendNoContextNoStreamChatReq'
       - description: authentication
         in: header
         name: Authorization
@@ -494,10 +564,37 @@ paths:
         "200":
           description: response data
           schema:
-            $ref: '#/definitions/formjson.SendNoContextNoStreamChatResp'
+            $ref: '#/definitions/formjson.GetAllSessionsResp'
       security:
       - ApiKeyAuth: []
-      summary: 发送无上下文无流式聊天
+      summary: 获取指定用户的所有会话列表
+      tags:
+      - Chat
+  /v1/chat/get_session_messages:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: get session messages by session id
+      parameters:
+      - description: session id
+        in: query
+        name: session_id
+        type: integer
+      - description: authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response data
+          schema:
+            $ref: '#/definitions/formjson.GetSessionMessagesResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取指定会话的所有消息
       tags:
       - Chat
   /v1/chat/no_context_stream:
@@ -527,6 +624,63 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 发送无上下文流式聊天
+      tags:
+      - Chat
+  /v1/chat/session:
+    post:
+      consumes:
+      - application/json
+      description: create new session
+      parameters:
+      - description: request data
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/formjson.CreateSessionReq'
+      - description: authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response data
+          schema:
+            $ref: '#/definitions/formjson.StatusResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 新建会话
+      tags:
+      - Chat
+    put:
+      consumes:
+      - application/json
+      description: update existed session
+      parameters:
+      - description: request data
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/formjson.UpdateSessionReq'
+      - description: authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response data
+          schema:
+            $ref: '#/definitions/formjson.StatusResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新会话
       tags:
       - Chat
   /v1/image/generate:

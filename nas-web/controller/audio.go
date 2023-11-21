@@ -30,7 +30,7 @@ func (a AudioController) Transcriptions(ctx *wrapper.Context) {
 // @Accept json
 // @Produce octet-stream
 // @Param auth body formjson.SpeechReq true "request data"
-// @Success 200 {file} "response data"
+// @Success 200 {file} - "response data"
 // @Router /v1/audio/speech [post]
 // @Security ApiKeyAuth
 // @Param Authorization header string true "authentication"

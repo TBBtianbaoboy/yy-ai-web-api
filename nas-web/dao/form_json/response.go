@@ -1,12 +1,3 @@
-// ---------------------------------
-// File Name    : response.go
-// Author       : aico
-// Mail         : 2237616014@qq.com
-// Github       : https://github.com/TBBtianbaoboy
-// Site         : https://www.lengyangyu520.cn
-// Create Time  : 2021-12-14 18:46:30
-// Description  :
-// ----------------------------------
 package formjson
 
 import "nas-common/models"
@@ -51,11 +42,6 @@ type ListScanResp struct {
 // audio [Ok]
 type TranscriptionsResp struct {
 	Text string `json:"text"` //assistant answer
-}
-
-// chat [Ok]
-type SendNoContextNoStreamChatResp struct {
-	Answer string `json:"answer"` //assistant answer
 }
 
 // chat [Ok]

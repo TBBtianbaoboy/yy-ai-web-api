@@ -9,20 +9,6 @@ import (
 
 type ChatController struct{}
 
-// @Summary 发送无上下文无流式聊天
-// @Description send no context no stream chat
-// @Tags Chat
-// @Accept json
-// @Produce json
-// @Param auth body formjson.SendNoContextNoStreamChatReq true "request data"
-// @Success 200 {object} formjson.SendNoContextNoStreamChatResp "response data"
-// @Router /v1/chat/no_context_no_stream [post]
-// @Security ApiKeyAuth
-// @Param Authorization header string true "authentication"
-func (a ChatController) SendNoContextNoStreamChat(ctx *wrapper.Context) {
-	wrapper.ApiWrapper(ctx, service.SendNoContextNoStreamChatHandler, true, &formjson.SendNoContextNoStreamChatReq{}, &wrapper.ApiConfig{ReqType: support.CHECKTYPE_JSON})
-}
-
 // @Summary 发送无上下文流式聊天
 // @Description send no context stream chat
 // @Tags Chat
@@ -90,4 +76,32 @@ func (a ChatController) GetAllSessions(ctx *wrapper.Context) {
 // @Param Authorization header string true "authentication"
 func (a ChatController) GetSessionMessages(ctx *wrapper.Context) {
 	wrapper.ApiWrapper(ctx, service.GetSessionMessagesHandler, true, &formjson.GetSessionMessagesReq{}, &wrapper.ApiConfig{ReqType: support.CHECKTYPE_FORM})
+}
+
+// @Summary 新建会话
+// @Description create new session
+// @Tags Chat
+// @Accept json
+// @Produce json
+// @Param auth body formjson.CreateSessionReq true "request data"
+// @Success 200 {object} formjson.StatusResp "response data"
+// @Router /v1/chat/session [post]
+// @Security ApiKeyAuth
+// @Param Authorization header string true "authentication"
+func (a ChatController) CreateSession(ctx *wrapper.Context) {
+	wrapper.ApiWrapper(ctx, service.CreateSessionHandler, true, &formjson.CreateSessionReq{}, &wrapper.ApiConfig{ReqType: support.CHECKTYPE_JSON})
+}
+
+// @Summary 更新会话
+// @Description update existed session
+// @Tags Chat
+// @Accept json
+// @Produce json
+// @Param auth body formjson.UpdateSessionReq true "request data"
+// @Success 200 {object} formjson.StatusResp "response data"
+// @Router /v1/chat/session [put]
+// @Security ApiKeyAuth
+// @Param Authorization header string true "authentication"
+func (a ChatController) UpdateSession(ctx *wrapper.Context) {
+	wrapper.ApiWrapper(ctx, service.UpdateSessionHandler, true, &formjson.UpdateSessionReq{}, &wrapper.ApiConfig{ReqType: support.CHECKTYPE_JSON})
 }

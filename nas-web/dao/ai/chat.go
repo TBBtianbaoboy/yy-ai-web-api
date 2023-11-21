@@ -13,22 +13,6 @@ type chat struct{}
 
 var Chat chat
 
-func (c *chat) RunWithNoContextNoStream(modelName string, question string) (string, error) {
-	resp, err := innerOpenai.Client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
-		Model: modelName,
-		Messages: []openai.ChatCompletionMessage{
-			{
-				Role:    openai.ChatMessageRoleUser,
-				Content: question,
-			},
-		},
-	})
-	if err != nil {
-		return "", err
-	}
-	return resp.Choices[0].Message.Content, err
-}
-
 func (c *chat) RunWithNoContextStream(modelName string, question string) (*openai.ChatCompletionStream, error) {
 	stream, err := innerOpenai.Client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
 		Model: modelName,
@@ -43,7 +27,7 @@ func (c *chat) RunWithNoContextStream(modelName string, question string) (*opena
 	return stream, err
 }
 
-func (c *chat) RunWithContextStream(modelName string, question string, sessionMessagesDesc *models.SessionMessagesDesc) (*openai.ChatCompletionStream, error) {
+func (c *chat) RunWithContextStream(question string, sessionMessagesDesc *models.SessionMessagesDesc) (*openai.ChatCompletionStream, error) {
 	messages := make([]openai.ChatCompletionMessage, len(sessionMessagesDesc.Messages), len(sessionMessagesDesc.Messages)+1)
 	for i, v := range sessionMessagesDesc.Messages {
 		messages[i].Role = v.Role
@@ -57,9 +41,21 @@ func (c *chat) RunWithContextStream(modelName string, question string, sessionMe
 		fmt.Println(i, v.Role, v.Content)
 	}
 	stream, err := innerOpenai.Client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
-		Model:    modelName,
-		Messages: messages,
-		Stream:   true,
+		Model:       sessionMessagesDesc.Model,
+		Messages:    messages,
+		Stream:      true,
+		Temperature: sessionMessagesDesc.Temperature,
+		MaxTokens:   sessionMessagesDesc.MaxTokens,
+		Stop: func() []string {
+			tempStop := make([]string, 0, len(sessionMessagesDesc.Stop))
+			for _, v := range sessionMessagesDesc.Stop {
+				if v == "" {
+					continue
+				}
+				tempStop = append(tempStop, v)
+			}
+			return tempStop
+		}(),
 	})
 	return stream, err
 }
