@@ -68,7 +68,13 @@ type SessionMessages struct {
 
 type GetSessionMessagesResp struct {
 	Uid      int               `json:"uid"`      //用户id
+	Model    string            `json:"model"`    //模型名称
 	Messages []SessionMessages `json:"messages"` //session messages
+}
+
+// chat [ok]
+type CreateSessionResp struct {
+	SessionId int `json:"session_id"` //新建的会话id
 }
 
 // service scan.go

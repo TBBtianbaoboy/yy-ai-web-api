@@ -26,7 +26,6 @@ Other:
     - /
     - /auth/login
     - /auth/verifycode
-    - /v1/user
 
   JwtTimeOut: 864000 #second
   JwtLogLevel: debug

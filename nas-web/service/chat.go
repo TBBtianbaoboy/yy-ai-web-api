@@ -114,7 +114,8 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 			return err
 		}
 
-		ctx.Writef("data: %s\n\n", response.Choices[0].Delta.Content)
+		result := strings.ReplaceAll(response.Choices[0].Delta.Content, "\n", "[Enter]")
+		ctx.Writef("data: %s\n\n", result)
 		output = append(output, response.Choices[0].Delta.Content)
 		flusher.Flush()
 	}
@@ -200,6 +201,7 @@ func GetSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err e
 	}
 
 	resp.Messages = messages
+	resp.Model = sessionMessagesDesc.Model
 	support.SendApiResponse(ctx, resp, "")
 	return
 }
@@ -207,7 +209,7 @@ func GetSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err e
 // CreateSessionHandler 新建会话
 func CreateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
 	req := reqBody.(*formjson.CreateSessionReq)
-	resp := formjson.StatusResp{Status: "OK"}
+	resp := formjson.CreateSessionResp{}
 	newSessionId := mongo.Chat.GetMaxSessionId(ctx, ctx.UserToken.UserId)
 
 	messages := make([]models.SessionMessages, 0, 1)
@@ -240,6 +242,7 @@ func CreateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error)
 		return err
 	}
 
+	resp.SessionId = newSessionId
 	support.SendApiResponse(ctx, resp, "")
 	return
 }
