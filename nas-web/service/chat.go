@@ -114,8 +114,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 			return err
 		}
 
-		result := strings.ReplaceAll(response.Choices[0].Delta.Content, "\n", "[Enter]")
-		ctx.Writef("data: %s\n\n", result)
+		ctx.Writef("data: %s\n\n", response.Choices[0].Delta.Content)
 		output = append(output, response.Choices[0].Delta.Content)
 		flusher.Flush()
 	}
