@@ -84,6 +84,11 @@ type GetSessionMessagesReq struct {
 }
 
 // chat [Ok]
+type DeleteSessionMessagesReq struct {
+	SessionId int `json:"session_id" form:"session_id"` // session id
+}
+
+// chat [Ok]
 type CreateSessionReq struct {
 	SessionName string   `json:"session_name"` // 会话名称
 	Model       string   `json:"model"`        // 模型名称

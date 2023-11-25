@@ -15,4 +15,5 @@ func RegisterChatRouter(party router.Party) {
 	party.Handle("GET", "/get_session_messages", wrapper.Handler(controller.ChatController{}.GetSessionMessages))
 	party.Handle("POST", "/session", wrapper.Handler(controller.ChatController{}.CreateSession))
 	party.Handle("PUT", "/session", wrapper.Handler(controller.ChatController{}.UpdateSession))
+	party.Handle("DELETE", "/session_messages", wrapper.Handler(controller.ChatController{}.DeleteSessionMessages))
 }

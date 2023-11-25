@@ -76,3 +76,12 @@ func (chat) UpdateModelParams(ctx context.Context, usid string, update bson.M) (
 	err = db.MongoCli.Update(dbName, query, update, false)
 	return
 }
+
+func (chat) DeleteMessages(ctx context.Context, usid string, update bson.M) (err error) {
+	dbName := (&models.SessionMessagesDesc{}).Collection()
+	query := bson.M{
+		"_id": usid,
+	}
+	err = db.MongoCli.UpdateManual(dbName, query, update, false)
+	return
+}

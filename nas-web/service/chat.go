@@ -201,6 +201,9 @@ func GetSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err e
 
 	resp.Messages = messages
 	resp.Model = sessionMessagesDesc.Model
+	resp.MaxTokens = sessionMessagesDesc.MaxTokens
+	resp.Temperature = sessionMessagesDesc.Temperature
+	resp.SessionName = sessionMessagesDesc.SessionName
 	support.SendApiResponse(ctx, resp, "")
 	return
 }
@@ -249,7 +252,7 @@ func CreateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error)
 // UpdateSessionHandler 更新会话
 func UpdateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
 	req := reqBody.(*formjson.UpdateSessionReq)
-	resp := formjson.StatusResp{Status: "OK"}
+	resp := formjson.UpdateSessionResp{SessionId: req.SessionId}
 
 	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
 
@@ -267,6 +270,22 @@ func UpdateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error)
 		return err
 	}
 
+	support.SendApiResponse(ctx, resp, "")
+	return
+}
+
+// DeleteSessionMessagesHandler 删除指定会话的所有消息
+func DeleteSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
+	req := reqBody.(*formjson.DeleteSessionMessagesReq)
+	resp := formjson.StatusResp{Status: "OK"}
+	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
+	empty := make([]models.SessionMessages, 0, 0)
+	change := bson.M{"$set": bson.M{"messages": empty}} // delete to only keep system messgae
+	if err = mongo.Chat.DeleteMessages(ctx, usid, change); err != nil {
+		mlog.Error("delete session messages failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerDeleteSessionMessageFailed, 0)
+		return nil
+	}
 	support.SendApiResponse(ctx, resp, "")
 	return
 }

@@ -105,3 +105,17 @@ func (a ChatController) CreateSession(ctx *wrapper.Context) {
 func (a ChatController) UpdateSession(ctx *wrapper.Context) {
 	wrapper.ApiWrapper(ctx, service.UpdateSessionHandler, true, &formjson.UpdateSessionReq{}, &wrapper.ApiConfig{ReqType: support.CHECKTYPE_JSON})
 }
+
+// @Summary 删除指定会话的所有消息
+// @Description delete all messages by session id
+// @Tags Chat
+// @Accept json
+// @Produce json
+// @Param auth body formjson.DeleteSessionMessagesReq true "request data"
+// @Success 200 {object} formjson.StatusResp "response data"
+// @Router /v1/chat/session_messages [delete]
+// @Security ApiKeyAuth
+// @Param Authorization header string true "authentication"
+func (a ChatController) DeleteSessionMessages(ctx *wrapper.Context) {
+	wrapper.ApiWrapper(ctx, service.DeleteSessionMessagesHandler, true, &formjson.DeleteSessionMessagesReq{}, &wrapper.ApiConfig{ReqType: support.CHECKTYPE_JSON})
+}

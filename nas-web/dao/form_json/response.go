@@ -67,14 +67,22 @@ type SessionMessages struct {
 }
 
 type GetSessionMessagesResp struct {
-	Uid      int               `json:"uid"`      //用户id
-	Model    string            `json:"model"`    //模型名称
-	Messages []SessionMessages `json:"messages"` //session messages
+	Uid         int               `json:"uid"`          //用户id
+	Model       string            `json:"model"`        //模型名称
+	MaxTokens   int               `json:"max_tokens"`   // 输入+输出的最大长度
+	SessionName string            `json:"session_name"` //会话名称
+	Temperature float32           `json:"temperature"`  // 生成文本的多样性
+	Messages    []SessionMessages `json:"messages"`     //session messages
 }
 
 // chat [ok]
 type CreateSessionResp struct {
 	SessionId int `json:"session_id"` //新建的会话id
+}
+
+// chat [ok]
+type UpdateSessionResp struct {
+	SessionId int `json:"session_id"` //更新的会话id
 }
 
 // service scan.go
