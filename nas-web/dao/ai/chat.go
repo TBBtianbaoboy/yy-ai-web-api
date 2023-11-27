@@ -2,7 +2,6 @@ package ai
 
 import (
 	"context"
-	"fmt"
 	"nas-common/models"
 	innerOpenai "nas-web/interal/openai"
 
@@ -13,9 +12,9 @@ type chat struct{}
 
 var Chat chat
 
-func (c *chat) RunWithNoContextStream(modelName string, question string) (*openai.ChatCompletionStream, error) {
+func (c *chat) RunWithNoContextStream(question string) (*openai.ChatCompletionStream, error) {
 	stream, err := innerOpenai.Client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
-		Model: modelName,
+		Model: openai.GPT3Dot5Turbo1106,
 		Messages: []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleUser,
@@ -28,18 +27,17 @@ func (c *chat) RunWithNoContextStream(modelName string, question string) (*opena
 }
 
 func (c *chat) RunWithContextStream(question string, sessionMessagesDesc *models.SessionMessagesDesc) (*openai.ChatCompletionStream, error) {
-	messages := make([]openai.ChatCompletionMessage, len(sessionMessagesDesc.Messages), len(sessionMessagesDesc.Messages)+1)
+	messages := make([]openai.ChatCompletionMessage, len(sessionMessagesDesc.Messages)+1, len(sessionMessagesDesc.Messages)+2)
+	messages[0].Role = openai.ChatMessageRoleSystem
+	messages[0].Content = sessionMessagesDesc.System
 	for i, v := range sessionMessagesDesc.Messages {
-		messages[i].Role = v.Role
-		messages[i].Content = v.Content
+		messages[i+1].Role = v.Role
+		messages[i+1].Content = v.Content
 	}
 	messages = append(messages, openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleUser,
 		Content: question,
 	})
-	for i, v := range messages {
-		fmt.Println(i, v.Role, v.Content)
-	}
 	stream, err := innerOpenai.Client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
 		Model:       sessionMessagesDesc.Model,
 		Messages:    messages,

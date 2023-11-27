@@ -23,11 +23,11 @@ import (
 func SendNoContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) error {
 	req := reqBody.(*formjson.SendNoContextStreamChatReq)
 
-	stream, err := ai.Chat.RunWithNoContextStream(req.ModelName, req.Question)
+	stream, err := ai.Chat.RunWithNoContextStream(req.Question)
 	if err != nil {
 		mlog.Error("create no context stream chat failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerCreateChatFailed, 0)
-		return err
+		return nil
 	}
 	defer stream.Close()
 
@@ -51,7 +51,7 @@ func SendNoContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) e
 		if err != nil {
 			mlog.Error("receive no context stream chat failed", zap.Error(err))
 			support.SendApiErrorResponse(ctx, support.ServerReceiveChatFailed, 0)
-			return err
+			return nil
 		}
 
 		// must end with \n\n
@@ -71,7 +71,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 	if err != nil {
 		mlog.Error("session not exist", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ChatSessionNotExist, 0)
-		return err
+		return nil
 	}
 
 	// [2]: create stream to run
@@ -79,7 +79,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 	if err != nil {
 		mlog.Error("create context stream chat failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerCreateChatFailed, 0)
-		return err
+		return nil
 	}
 	defer stream.Close()
 
@@ -111,7 +111,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 		if err != nil {
 			mlog.Error("receive context stream chat failed", zap.Error(err))
 			support.SendApiErrorResponse(ctx, support.ServerReceiveChatFailed, 0)
-			return err
+			return nil
 		}
 
 		ctx.Writef("data: %s\n\n", response.Choices[0].Delta.Content)
@@ -133,7 +133,7 @@ func SendContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) err
 	if err = mongo.Chat.AppendMessages(ctx, usid, change); err != nil {
 		mlog.Error("update session message failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerUpdateSessionMessageFailed, 0)
-		return err
+		return nil
 	}
 	return nil
 }
@@ -148,11 +148,11 @@ func DeleteContextStreamChatHandler(ctx *wrapper.Context, reqBody interface{}) (
 	if err != nil {
 		mlog.Error("delete session failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerDeleteSessionMessageFailed, 0)
-		return
+		return nil
 	}
 	support.SendApiResponse(ctx, resp, "")
 
-	return
+	return nil
 }
 
 // GetAllSessionsHandler 获取指定用户的所有会话
@@ -183,27 +183,30 @@ func GetAllSessionsHandler(ctx *wrapper.Context, reqBody interface{}) (err error
 // GetSessionMessagesHandler 获取指定会话的所有消息
 func GetSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
 	req := reqBody.(*formjson.GetSessionMessagesReq)
-	resp := formjson.GetSessionMessagesResp{Uid: ctx.UserToken.UserId}
 	usid := webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(req.SessionId))
-	var sessionMessagesDesc models.SessionMessagesDesc
-	if sessionMessagesDesc, err = mongo.Chat.GetByUSid(ctx, usid); err != nil {
+	var doc models.SessionMessagesDesc
+	if doc, err = mongo.Chat.GetByUSid(ctx, usid); err != nil {
 		mlog.Error("get session messages failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerGetSessionMessageFailed, 0)
 		return nil
 	}
-	messages := make([]formjson.SessionMessages, 0, len(sessionMessagesDesc.Messages))
-	for _, message := range sessionMessagesDesc.Messages {
+	messages := make([]formjson.SessionMessages, 0, len(doc.Messages))
+	for _, message := range doc.Messages {
 		messages = append(messages, formjson.SessionMessages{
 			Role:    message.Role,
 			Content: message.Content,
 		})
 	}
 
-	resp.Messages = messages
-	resp.Model = sessionMessagesDesc.Model
-	resp.MaxTokens = sessionMessagesDesc.MaxTokens
-	resp.Temperature = sessionMessagesDesc.Temperature
-	resp.SessionName = sessionMessagesDesc.SessionName
+	resp := formjson.GetSessionMessagesResp{
+		Uid:         ctx.UserToken.UserId,
+		Model:       doc.Model,
+		Messages:    messages,
+		MaxTokens:   doc.MaxTokens,
+		Temperature: doc.Temperature,
+		SessionName: doc.SessionName,
+		System:      doc.System,
+	}
 	support.SendApiResponse(ctx, resp, "")
 	return
 }
@@ -213,17 +216,6 @@ func CreateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error)
 	req := reqBody.(*formjson.CreateSessionReq)
 	resp := formjson.CreateSessionResp{}
 	newSessionId := mongo.Chat.GetMaxSessionId(ctx, ctx.UserToken.UserId)
-
-	messages := make([]models.SessionMessages, 0, 1)
-	messages = append(messages, models.SessionMessages{
-		Role: support.ChatMessageRoleSystem,
-		Content: func() string {
-			if req.System == "" {
-				return "You are a helpful assistant."
-			}
-			return req.System
-		}(),
-	})
 
 	sessionMessagesDesc := models.SessionMessagesDesc{
 		USid:        webutils.String.Hash(strconv.Itoa(ctx.UserToken.UserId), strconv.Itoa(newSessionId)),
@@ -235,13 +227,13 @@ func CreateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error)
 		MaxTokens:   req.MaxTokens,
 		Stop:        req.Stop,
 		SessionName: req.SessionName,
-		Messages:    messages,
+		System:      req.System,
 	}
 
 	if err = mongo.Chat.AddSession(ctx, &sessionMessagesDesc); err != nil {
 		mlog.Error("create session failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerCreateSessionFailed, 0)
-		return err
+		return nil
 	}
 
 	resp.SessionId = newSessionId
@@ -262,12 +254,13 @@ func UpdateSessionHandler(ctx *wrapper.Context, reqBody interface{}) (err error)
 		"stop":         req.Stop,
 		"model":        req.Model,
 		"session_name": req.SessionName,
+		"system":       req.System,
 	}
 
 	if err = mongo.Chat.UpdateModelParams(ctx, usid, update); err != nil {
 		mlog.Error("update session failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerUpdateSessionFailed, 0)
-		return err
+		return nil
 	}
 
 	support.SendApiResponse(ctx, resp, "")
@@ -284,6 +277,18 @@ func DeleteSessionMessagesHandler(ctx *wrapper.Context, reqBody interface{}) (er
 	if err = mongo.Chat.DeleteMessages(ctx, usid, change); err != nil {
 		mlog.Error("delete session messages failed", zap.Error(err))
 		support.SendApiErrorResponse(ctx, support.ServerDeleteSessionMessageFailed, 0)
+		return nil
+	}
+	support.SendApiResponse(ctx, resp, "")
+	return
+}
+
+// DeleteAllSessionsHandler 删除指定用户的所有会话
+func DeleteAllSessionsHandler(ctx *wrapper.Context, reqBody interface{}) (err error) {
+	resp := formjson.StatusResp{Status: "OK"}
+	if err = mongo.Chat.DeleteAllSessions(ctx, ctx.UserToken.UserId); err != nil {
+		mlog.Error("delete all sessions failed", zap.Error(err))
+		support.SendApiErrorResponse(ctx, support.ServerDeleteAllSessionFailed, 0)
 		return nil
 	}
 	support.SendApiResponse(ctx, resp, "")

@@ -73,6 +73,7 @@ type GetSessionMessagesResp struct {
 	SessionName string            `json:"session_name"` //会话名称
 	Temperature float32           `json:"temperature"`  // 生成文本的多样性
 	Messages    []SessionMessages `json:"messages"`     //session messages
+	System      string            `json:"system"`       //system message
 }
 
 // chat [ok]

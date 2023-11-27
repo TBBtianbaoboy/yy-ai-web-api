@@ -63,8 +63,7 @@ type SpeechReq struct {
 
 // chat [Ok]
 type SendNoContextStreamChatReq struct {
-	ModelName string `json:"model_name"` // chat model name
-	Question  string `json:"question"`   // chat content
+	Question string `json:"question"` // chat content
 }
 
 // chat [Ok]
@@ -106,6 +105,7 @@ type UpdateSessionReq struct {
 	MaxTokens   int      `json:"max_tokens"`   // 输入+输出的最大长度
 	Temperature float32  `json:"temperature"`  // 生成文本的多样性
 	Stop        []string `json:"stop"`         // 匹配到这些词时停止生成
+	System      string   `json:"system"`       // 模型系统内容
 }
 
 type DeleteScanReq struct {

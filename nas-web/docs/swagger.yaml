@@ -56,6 +56,12 @@ definitions:
         description: session id
         type: integer
     type: object
+  formjson.DeleteSessionMessagesReq:
+    properties:
+      session_id:
+        description: session id
+        type: integer
+    type: object
   formjson.DeleteUserReq:
     properties:
       uids:
@@ -114,11 +120,26 @@ definitions:
     type: object
   formjson.GetSessionMessagesResp:
     properties:
+      max_tokens:
+        description: 输入+输出的最大长度
+        type: integer
       messages:
         description: session messages
         items:
           $ref: '#/definitions/formjson.SessionMessages'
         type: array
+      model:
+        description: 模型名称
+        type: string
+      session_name:
+        description: 会话名称
+        type: string
+      system:
+        description: system message
+        type: string
+      temperature:
+        description: 生成文本的多样性
+        type: number
       uid:
         description: 用户id
         type: integer
@@ -240,9 +261,6 @@ definitions:
     type: object
   formjson.SendNoContextStreamChatReq:
     properties:
-      model_name:
-        description: chat model name
-        type: string
       question:
         description: chat content
         type: string
@@ -322,6 +340,9 @@ definitions:
         items:
           type: string
         type: array
+      system:
+        description: 模型系统内容
+        type: string
       temperature:
         description: 生成文本的多样性
         type: number
@@ -489,6 +510,29 @@ paths:
       summary: Transcribes audio into the input language
       tags:
       - Audio
+  /v1/chat/all_sessions:
+    delete:
+      consumes:
+      - application/json
+      description: delete all sessions by user id
+      parameters:
+      - description: authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response data
+          schema:
+            $ref: '#/definitions/formjson.StatusResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除指定用户的所有会话
+      tags:
+      - Chat
   /v1/chat/context_stream:
     post:
       consumes:
@@ -681,6 +725,35 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 更新会话
+      tags:
+      - Chat
+  /v1/chat/session_messages:
+    delete:
+      consumes:
+      - application/json
+      description: delete all messages by session id
+      parameters:
+      - description: request data
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/formjson.DeleteSessionMessagesReq'
+      - description: authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response data
+          schema:
+            $ref: '#/definitions/formjson.StatusResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除指定会话的所有消息
       tags:
       - Chat
   /v1/image/generate:

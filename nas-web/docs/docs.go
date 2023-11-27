@@ -215,6 +215,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/chat/all_sessions": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete all sessions by user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "删除指定用户的所有会话",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response data",
+                        "schema": {
+                            "$ref": "#/definitions/formjson.StatusResp"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/chat/context_stream": {
             "post": {
                 "security": [
@@ -503,6 +540,52 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/formjson.CreateSessionReq"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response data",
+                        "schema": {
+                            "$ref": "#/definitions/formjson.StatusResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/chat/session_messages": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete all messages by session id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "删除指定会话的所有消息",
+                "parameters": [
+                    {
+                        "description": "request data",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/formjson.DeleteSessionMessagesReq"
                         }
                     },
                     {
@@ -1024,6 +1107,15 @@ const docTemplate = `{
                 }
             }
         },
+        "formjson.DeleteSessionMessagesReq": {
+            "type": "object",
+            "properties": {
+                "session_id": {
+                    "description": "session id",
+                    "type": "integer"
+                }
+            }
+        },
         "formjson.DeleteUserReq": {
             "type": "object",
             "required": [
@@ -1108,12 +1200,32 @@ const docTemplate = `{
         "formjson.GetSessionMessagesResp": {
             "type": "object",
             "properties": {
+                "max_tokens": {
+                    "description": "输入+输出的最大长度",
+                    "type": "integer"
+                },
                 "messages": {
                     "description": "session messages",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/formjson.SessionMessages"
                     }
+                },
+                "model": {
+                    "description": "模型名称",
+                    "type": "string"
+                },
+                "session_name": {
+                    "description": "会话名称",
+                    "type": "string"
+                },
+                "system": {
+                    "description": "system message",
+                    "type": "string"
+                },
+                "temperature": {
+                    "description": "生成文本的多样性",
+                    "type": "number"
                 },
                 "uid": {
                     "description": "用户id",
@@ -1284,10 +1396,6 @@ const docTemplate = `{
         "formjson.SendNoContextStreamChatReq": {
             "type": "object",
             "properties": {
-                "model_name": {
-                    "description": "chat model name",
-                    "type": "string"
-                },
                 "question": {
                     "description": "chat content",
                     "type": "string"
@@ -1392,6 +1500,10 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "system": {
+                    "description": "模型系统内容",
+                    "type": "string"
                 },
                 "temperature": {
                     "description": "生成文本的多样性",

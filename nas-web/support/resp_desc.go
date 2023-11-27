@@ -73,5 +73,6 @@ const (
 	ServerGetSessionMessagesFailed   string = "获取会话消息失败"
 	ServerCreateSessionFailed        string = "新建会话失败"
 	ServerUpdateSessionFailed        string = "更新会话失败"
+	ServerDeleteAllSessionFailed     string = "删除所有会话失败"
 	ChatSessionNotExist              string = "会话不存在"
 )

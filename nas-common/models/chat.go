@@ -16,6 +16,7 @@ type SessionMessagesDesc struct {
 	Model       string            `bson:"model"`        // 模型名称
 	MaxTokens   int               `bson:"max_tokens"`   // 输入+输出的最大长度
 	Temperature float32           `bson:"temperature"`  // 生成文本的多样性
+	System      string            `bson:"system"`       // system message
 	Stop        []string          `bson:"stop"`         // 匹配到这些词时停止生成
 	Messages    []SessionMessages `bson:"messages"`     // messages
 }
